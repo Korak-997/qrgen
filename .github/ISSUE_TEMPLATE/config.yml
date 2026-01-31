@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Questions & Discussions
+    url: https://github.com/Korak-997/qrgen/discussions
+    about: Use GitHub Discussions for questions, ideas, and general conversations
+  - name: 📖 Documentation
+    url: https://github.com/Korak-997/qrgen#readme
+    about: Check out our documentation for usage guides and FAQs

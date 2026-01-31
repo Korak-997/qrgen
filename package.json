@@ -1,8 +1,31 @@
 {
   "name": "qrgen",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "A free, simple, and ad-free QR code generator with customization options",
+  "author": "Korak-997",
+  "license": "MIT",
+  "homepage": "https://github.com/Korak-997/qrgen#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Korak-997/qrgen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Korak-997/qrgen/issues"
+  },
+  "keywords": [
+    "qr-code",
+    "qr-generator",
+    "qrcode",
+    "vue",
+    "vue3",
+    "typescript",
+    "tailwindcss",
+    "daisyui",
+    "free",
+    "open-source"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
