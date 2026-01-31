@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, computed, nextTick, watchEffect } from 'vue'
+import { ref, watch, onMounted, onUnmounted, computed, nextTick } from 'vue'
 import QRCodeStyling from 'qr-code-styling'
 import { QrCode } from 'lucide-vue-next'
 import type { QRStyling } from '@/types/qr'

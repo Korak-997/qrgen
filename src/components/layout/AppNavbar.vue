@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Menu, X, QrCode } from 'lucide-vue-next'
+import { Menu, X } from 'lucide-vue-next'
 
 interface NavLink {
   label: string
