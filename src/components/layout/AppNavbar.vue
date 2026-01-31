@@ -33,9 +33,9 @@ function toggleMobileMenu() {
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <!-- Brand -->
-        <a href="/" class="flex items-center gap-2 group">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
-            <QrCode class="w-5 h-5 text-white" />
+        <a href="/" class="flex items-center gap-3 group">
+          <div class="h-10 w-auto transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
+             <img src="/branding/logo-source.png" alt="QRGen Logo" class="h-full w-auto object-contain" />
           </div>
           <span class="text-xl font-bold text-white tracking-tight">
             {{ brand }}
@@ -55,7 +55,7 @@ function toggleMobileMenu() {
             <!-- Active indicator -->
             <span
               v-if="link.active"
-              class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary"
+              class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[var(--color-primary)]"
             />
           </a>
         </div>
@@ -99,7 +99,7 @@ function toggleMobileMenu() {
             :key="link.href"
             :href="link.href"
             class="block px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"
-            :class="link.active ? 'bg-primary/20 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white'"
+            :class="link.active ? 'bg-[var(--color-primary)]/20 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white'"
             @click="isMobileMenuOpen = false"
           >
             {{ link.label }}
@@ -124,12 +124,15 @@ function toggleMobileMenu() {
 
 <style scoped>
 .btn-primary {
-  background: linear-gradient(135deg, oklch(0.6 0.2 260) 0%, oklch(0.5 0.22 280) 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
   border: none;
-  box-shadow: 0 4px 15px -3px oklch(0.6 0.2 260 / 0.4);
+  box-shadow: 0 4px 15px -3px color-mix(in srgb, var(--color-primary), transparent 60%);
+  color: #1a1a1a;
+  font-weight: 600;
 }
 
 .btn-primary:hover {
-  box-shadow: 0 6px 20px -3px oklch(0.6 0.2 260 / 0.5);
+  box-shadow: 0 6px 20px -3px color-mix(in srgb, var(--color-primary), transparent 50%);
+  transform: translateY(-1px);
 }
 </style>

@@ -64,7 +64,7 @@ export const COLOR_PRESETS = [
   { name: 'Berry', fg: '#6b2d5c', bg: '#ffffff' },
   { name: 'Sunset', fg: '#c2410c', bg: '#ffffff' },
   { name: 'Ocean', fg: '#0369a1', bg: '#ffffff' },
-  { name: 'Dark Mode', fg: '#ffffff', bg: '#1a1a1a' },
+  { name: 'Dark Mode', fg: '#ffffff', bg: '#262b2f' },
   { name: 'Purple Haze', fg: '#7c3aed', bg: '#ffffff' }
 ] as const
 

@@ -2,8 +2,8 @@
 @plugin "daisyui";
 
 @theme {
-  --color-primary: oklch(0.6 0.2 260);
-  --color-accent: oklch(0.7 0.15 320);
+  --color-primary: #3cfa78;
+  --color-accent: #0af0e6;
 
   --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   --radius-xl: 1.5rem;
@@ -17,6 +17,7 @@
 }
 
 body {
-  background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0a 100%);
+  background: radial-gradient(circle at center, #262b2f 0%, #000000 100%);
   min-height: 100vh;
+  color: white;
 }

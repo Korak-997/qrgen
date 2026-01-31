@@ -77,33 +77,35 @@ defineEmits<{
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, oklch(0.6 0.2 260) 0%, oklch(0.5 0.22 280) 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
   border: none;
   box-shadow:
-    0 4px 15px -3px oklch(0.6 0.2 260 / 0.4),
+    0 4px 15px -3px color-mix(in srgb, var(--color-primary), transparent 60%),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  color: #1a1a1a;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, oklch(0.65 0.2 260) 0%, oklch(0.55 0.22 280) 100%);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary), white 10%) 0%, color-mix(in srgb, var(--color-accent), white 10%) 100%);
   box-shadow:
-    0 6px 20px -3px oklch(0.6 0.2 260 / 0.5),
+    0 6px 20px -3px color-mix(in srgb, var(--color-primary), transparent 50%),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   transform: translateY(-1px);
 }
 
 .btn-accent {
-  background: linear-gradient(135deg, oklch(0.7 0.15 320) 0%, oklch(0.6 0.18 340) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, oklch(0.6 0.18 340) 100%);
   border: none;
   box-shadow:
-    0 4px 15px -3px oklch(0.7 0.15 320 / 0.4),
+    0 4px 15px -3px color-mix(in srgb, var(--color-accent), transparent 60%),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  color: #1a1a1a;
 }
 
 .btn-accent:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow:
-    0 6px 20px -3px oklch(0.7 0.15 320 / 0.5),
+    0 6px 20px -3px color-mix(in srgb, var(--color-accent), transparent 50%),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 

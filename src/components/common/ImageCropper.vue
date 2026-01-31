@@ -261,13 +261,13 @@ onUnmounted(() => {
 /* Stencil border - dashed style matching app's primary blue */
 :deep(.vue-simple-line) {
   border-style: dashed !important;
-  border-color: oklch(0.6 0.2 260) !important;
+  border-color: var(--color-primary) !important;
   border-width: 2px !important;
 }
 
 /* Corner handles - matching app's primary color */
 :deep(.vue-simple-handler) {
-  background: oklch(0.6 0.2 260) !important;
+  background: var(--color-primary) !important;
   border: none !important;
   width: 12px !important;
   height: 12px !important;
