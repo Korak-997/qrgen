@@ -84,8 +84,11 @@ defineEmits<{
   box-shadow: var(--shadow-glass);
   color: white;
   border-radius: var(--radius-xl);
-  padding-left: 1rem;
   padding-right: 1rem;
+}
+
+.input:not(.pl-12) {
+  padding-left: 1rem;
 }
 
 .input::placeholder {
