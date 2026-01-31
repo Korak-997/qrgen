@@ -86,7 +86,8 @@ function processFiles(newFiles: File[]) {
     if (props.multiple) {
       files.value = [...files.value, ...validFiles]
     } else {
-      files.value = [validFiles[0]]
+      const firstFile = validFiles[0]
+      if (firstFile) files.value = [firstFile]
     }
     emit('upload', files.value)
   }

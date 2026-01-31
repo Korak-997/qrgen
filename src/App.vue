@@ -1,18 +1,31 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { AppNavbar, QRDisplay, QRGeneratorForm } from '@/components'
+import { ref, reactive } from 'vue'
+import { AppNavbar, QRDisplay, QRGeneratorForm, QRCustomizer } from '@/components'
 import { useQRCode, useDownload } from '@/composables'
+import { DEFAULT_QR_STYLING, type QRStyling } from '@/types/qr'
 
 // Composables
 const { inputValue, qrValue, isValid, isEmpty, errorMessage } = useQRCode()
 const { isDownloading, downloadCanvas } = useDownload()
 
+// Styling state
+const styling = reactive<QRStyling>({
+  logo: { ...DEFAULT_QR_STYLING.logo },
+  colors: { ...DEFAULT_QR_STYLING.colors },
+  dotStyle: DEFAULT_QR_STYLING.dotStyle,
+  cornerStyle: DEFAULT_QR_STYLING.cornerStyle
+})
+
 // Template ref for QR display
 const qrDisplayRef = ref<InstanceType<typeof QRDisplay> | null>(null)
 
 async function handleDownload() {
-  const canvas = qrDisplayRef.value?.getCanvas()
+  const canvas = qrDisplayRef.value?.getCanvas() ?? null
   await downloadCanvas(canvas, 'qrcode')
+}
+
+function handleStylingUpdate(newStyling: QRStyling) {
+  Object.assign(styling, newStyling)
 }
 </script>
 
@@ -39,23 +52,35 @@ async function handleDownload() {
       </div>
 
       <!-- Dashboard Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-start">
-        <!-- Form Panel -->
-        <QRGeneratorForm
-          v-model="inputValue"
-          :is-valid="isValid"
-          :error-message="errorMessage"
-          :is-downloading="isDownloading"
-          :can-download="isValid && !isEmpty"
-          @download="handleDownload"
-        />
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
+        <!-- Left Column: Form + Customizer -->
+        <div class="lg:col-span-5 space-y-6">
+          <!-- Form Panel -->
+          <QRGeneratorForm
+            v-model="inputValue"
+            :is-valid="isValid"
+            :error-message="errorMessage"
+            :is-downloading="isDownloading"
+            :can-download="isValid && !isEmpty"
+            @download="handleDownload"
+          />
 
-        <!-- QR Display Panel -->
-        <QRDisplay
-          ref="qrDisplayRef"
-          :value="qrValue"
-          :size="300"
-        />
+          <!-- Customizer Panel -->
+          <QRCustomizer
+            :styling="styling"
+            @update:styling="handleStylingUpdate"
+          />
+        </div>
+
+        <!-- Right Column: QR Display -->
+        <div class="lg:col-span-7">
+          <QRDisplay
+            ref="qrDisplayRef"
+            :value="qrValue"
+            :size="300"
+            :styling="styling"
+          />
+        </div>
       </div>
 
       <!-- Features Section -->
