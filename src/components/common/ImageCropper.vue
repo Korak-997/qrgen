@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 import { ZoomIn, ZoomOut, RotateCw, Check, X } from 'lucide-vue-next'
@@ -27,27 +27,80 @@ const emit = defineEmits<{
 }>()
 
 const cropperRef = ref()
+const containerRef = ref<HTMLElement>()
 const zoom = ref(1)
+
+// Overlay positioning using 4 rectangles (top, bottom, left, right)
+const overlayTop = ref({ height: '0px' })
+const overlayBottom = ref({ top: '0px', height: '0px' })
+const overlayLeft = ref({ top: '0px', height: '0px', width: '0px' })
+const overlayRight = ref({ top: '0px', height: '0px', left: '0px', width: '0px' })
+
+// Handle cropper change to track stencil position
+function handleCropperChange() {
+  nextTick(updateOverlay)
+}
+
+function updateOverlay() {
+  if (!cropperRef.value || !containerRef.value) return
+
+  const cropperEl = cropperRef.value.$el
+  if (!cropperEl) return
+
+  const containerWidth = cropperEl.clientWidth
+  const containerHeight = cropperEl.clientHeight
+
+  const result = cropperRef.value.getResult()
+  if (!result?.coordinates || !result?.visibleArea) return
+
+  const { coordinates, visibleArea } = result
+  const scale = containerWidth / visibleArea.width
+
+  // Calculate stencil position in container coordinates
+  const left = (coordinates.left - visibleArea.left) * scale
+  const top = (coordinates.top - visibleArea.top) * scale
+  const width = coordinates.width * scale
+  const height = coordinates.height * scale
+
+  // Update overlays - 4 rectangles surrounding the stencil
+  overlayTop.value = {
+    height: `${Math.max(0, top)}px`
+  }
+
+  overlayBottom.value = {
+    top: `${top + height}px`,
+    height: `${Math.max(0, containerHeight - top - height)}px`
+  }
+
+  overlayLeft.value = {
+    top: `${top}px`,
+    height: `${height}px`,
+    width: `${Math.max(0, left)}px`
+  }
+
+  overlayRight.value = {
+    top: `${top}px`,
+    height: `${height}px`,
+    left: `${left + width}px`,
+    width: `${Math.max(0, containerWidth - left - width)}px`
+  }
+}
 
 // Get cropped result
 async function handleCrop() {
   const { canvas } = cropperRef.value.getResult()
   if (!canvas) return
 
-  // Create output canvas at target size
   const outputCanvas = document.createElement('canvas')
   const ctx = outputCanvas.getContext('2d')
   if (!ctx) return
 
-  // Determine output size (clamped)
   const size = Math.min(props.maxWidth, Math.max(props.minWidth, canvas.width))
   outputCanvas.width = size
   outputCanvas.height = size
 
-  // Draw scaled image
   ctx.drawImage(canvas, 0, 0, size, size)
 
-  // Convert to data URL
   const mimeType = `image/${props.outputFormat}`
   const dataUrl = outputCanvas.toDataURL(mimeType, props.outputQuality)
 
@@ -66,12 +119,26 @@ function adjustZoom(delta: number) {
 function rotate() {
   cropperRef.value?.rotate(90)
 }
+
+// Update overlay on resize
+let resizeObserver: ResizeObserver | null = null
+
+onMounted(() => {
+  if (containerRef.value) {
+    resizeObserver = new ResizeObserver(updateOverlay)
+    resizeObserver.observe(containerRef.value)
+  }
+})
+
+onUnmounted(() => {
+  resizeObserver?.disconnect()
+})
 </script>
 
 <template>
   <div class="image-cropper">
     <!-- Cropper -->
-    <div class="relative bg-black/50 rounded-xl overflow-hidden aspect-square">
+    <div ref="containerRef" class="cropper-container">
       <Cropper
         ref="cropperRef"
         :src="imageSrc"
@@ -83,7 +150,14 @@ function rotate() {
           height: 200
         }"
         class="cropper"
+        @change="handleCropperChange"
       />
+
+      <!-- Overlay rectangles - 4 pieces that surround the stencil -->
+      <div class="crop-overlay overlay-top" :style="overlayTop" />
+      <div class="crop-overlay overlay-bottom" :style="overlayBottom" />
+      <div class="crop-overlay overlay-left" :style="overlayLeft" />
+      <div class="crop-overlay overlay-right" :style="overlayRight" />
     </div>
 
     <!-- Controls -->
@@ -134,9 +208,46 @@ function rotate() {
 </template>
 
 <style scoped>
+.cropper-container {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  aspect-ratio: 1;
+  background: #0a0a0a;
+}
+
 .cropper {
   height: 100%;
   width: 100%;
+}
+
+/* Overlay pieces that cover area outside crop */
+.crop-overlay {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: grayscale(100%) brightness(0.7);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.overlay-top {
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.overlay-bottom {
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.overlay-left {
+  left: 0;
+}
+
+.overlay-right {
+  right: 0;
 }
 
 :deep(.vue-advanced-cropper__background) {
@@ -145,5 +256,21 @@ function rotate() {
 
 :deep(.vue-advanced-cropper__foreground) {
   background: transparent;
+}
+
+/* Stencil border - dashed style matching app's primary blue */
+:deep(.vue-simple-line) {
+  border-style: dashed !important;
+  border-color: oklch(0.6 0.2 260) !important;
+  border-width: 2px !important;
+}
+
+/* Corner handles - matching app's primary color */
+:deep(.vue-simple-handler) {
+  background: oklch(0.6 0.2 260) !important;
+  border: none !important;
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 2px !important;
 }
 </style>
