@@ -92,7 +92,7 @@ Say goodbye to cluttered, ad-ridden QR code generators. **QRGen** is built with 
 
 ## 🚀 Demo
 
-Experience QRGen live: **[Coming Soon](#)**
+Experience QRGen live: **[QRgen](https://qrgen.korak-dev.uk/)**
 
 <p align="center">
   <em>Generate beautiful QR codes in seconds</em>
