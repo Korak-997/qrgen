@@ -11,6 +11,7 @@ export { default as IconGrid } from './common/IconGrid.vue'
 
 // Layout Components
 export { default as AppNavbar } from './layout/AppNavbar.vue'
+export { default as FAQSection } from './layout/FAQSection.vue'
 
 // QR Components
 export { default as QRDisplay } from './qr/QRDisplay.vue'

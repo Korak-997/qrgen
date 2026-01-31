@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { AppNavbar, QRDisplay, QRGeneratorForm, QRCustomizer } from '@/components'
+import { AppNavbar, QRDisplay, QRGeneratorForm, QRCustomizer, FAQSection } from '@/components'
 import { useQRCode, useDownload } from '@/composables'
 import { DEFAULT_QR_STYLING, type QRStyling } from '@/types/qr'
 
@@ -30,7 +30,15 @@ function handleStylingUpdate(newStyling: QRStyling) {
 </script>
 
 <template>
-  <div class="min-h-screen text-white">
+  <div class="min-h-screen text-white flex flex-col">
+    <!-- Skip to main content (accessibility) -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-black focus:rounded-lg focus:font-medium"
+    >
+      Skip to main content
+    </a>
+
     <!-- Navigation -->
     <AppNavbar brand="QRGen">
       <template #cta>
@@ -40,19 +48,19 @@ function handleStylingUpdate(newStyling: QRStyling) {
     </AppNavbar>
 
     <!-- Main Content -->
-    <main class="max-w-6xl mx-auto px-4 py-8 sm:py-12">
+    <main id="main-content" class="flex-1 max-w-6xl mx-auto px-4 py-8 sm:py-12 w-full">
       <!-- Hero Text -->
-      <div class="text-center mb-10 sm:mb-14">
+      <header class="text-center mb-10 sm:mb-14 animate-fade-in">
         <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-white via-white/90 to-primary bg-clip-text text-transparent">
           Free QR Code Generator
         </h1>
         <p class="text-white/60 text-base sm:text-lg max-w-xl mx-auto">
           Generate beautiful QR codes instantly. No ads, no watermarks, no sign-up required.
         </p>
-      </div>
+      </header>
 
       <!-- Dashboard Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
+      <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start animate-slide-up" aria-label="QR Code Generator">
         <!-- Left Column: Form + Customizer -->
         <div class="lg:col-span-5 space-y-6">
           <!-- Form Panel -->
@@ -81,31 +89,81 @@ function handleStylingUpdate(newStyling: QRStyling) {
             :styling="styling"
           />
         </div>
-      </div>
+      </section>
+
+      <!-- How It Works Section -->
+      <section class="mt-16 sm:mt-24 animate-fade-in-delayed" aria-labelledby="how-it-works-heading">
+        <h2 id="how-it-works-heading" class="text-2xl sm:text-3xl font-bold text-center text-white mb-8 sm:mb-12">
+          How It Works
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div class="text-center group">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-2xl font-bold text-primary group-hover:scale-110 transition-transform duration-300">
+              1
+            </div>
+            <h3 class="font-semibold text-white mb-2">Enter URL</h3>
+            <p class="text-white/50 text-sm">Paste any website link, social profile, or custom URL</p>
+          </div>
+          <div class="text-center group">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-2xl font-bold text-primary group-hover:scale-110 transition-transform duration-300">
+              2
+            </div>
+            <h3 class="font-semibold text-white mb-2">Customize</h3>
+            <p class="text-white/50 text-sm">Add your logo, change colors, and pick a style</p>
+          </div>
+          <div class="text-center group">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-2xl font-bold text-primary group-hover:scale-110 transition-transform duration-300">
+              3
+            </div>
+            <h3 class="font-semibold text-white mb-2">Download</h3>
+            <p class="text-white/50 text-sm">Get a high-quality PNG ready to use anywhere</p>
+          </div>
+        </div>
+      </section>
 
       <!-- Features Section -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12 sm:mt-16">
-        <div class="glass-panel rounded-2xl p-5 text-center">
+      <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12 sm:mt-16" aria-label="Features">
+        <article class="glass-panel rounded-2xl p-5 text-center hover:bg-white/10 transition-colors duration-300">
           <div class="text-2xl mb-2">🎯</div>
           <h3 class="font-semibold text-white mb-1">High Quality</h3>
           <p class="text-white/50 text-sm">Level H error correction for reliable scanning</p>
-        </div>
-        <div class="glass-panel rounded-2xl p-5 text-center">
+        </article>
+        <article class="glass-panel rounded-2xl p-5 text-center hover:bg-white/10 transition-colors duration-300">
           <div class="text-2xl mb-2">⚡</div>
           <h3 class="font-semibold text-white mb-1">Instant</h3>
           <p class="text-white/50 text-sm">Real-time generation as you type</p>
-        </div>
-        <div class="glass-panel rounded-2xl p-5 text-center">
+        </article>
+        <article class="glass-panel rounded-2xl p-5 text-center hover:bg-white/10 transition-colors duration-300">
           <div class="text-2xl mb-2">💎</div>
           <h3 class="font-semibold text-white mb-1">Free Forever</h3>
           <p class="text-white/50 text-sm">No hidden fees or premium tiers</p>
-        </div>
-      </div>
+        </article>
+      </section>
+
+      <!-- FAQ Section -->
+      <FAQSection />
     </main>
 
     <!-- Footer -->
-    <footer class="text-center text-white/30 text-sm py-8 mt-auto">
-      <p>Made with ❤️ • Open Source</p>
+    <footer class="text-center py-8 mt-auto border-t border-white/5">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mb-4">
+          <a href="#main-content" class="text-white/40 hover:text-white/70 text-sm transition-colors">
+            Back to Top
+          </a>
+          <span class="hidden sm:inline text-white/20">•</span>
+          <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="text-white/40 hover:text-white/70 text-sm transition-colors">
+            GitHub
+          </a>
+          <span class="hidden sm:inline text-white/20">•</span>
+          <span class="text-white/40 text-sm">
+            100% Free & Private
+          </span>
+        </div>
+        <p class="text-white/30 text-sm">
+          Made with ❤️ • Open Source • © 2026 QRGen
+        </p>
+      </div>
     </footer>
   </div>
 </template>
@@ -113,5 +171,36 @@ function handleStylingUpdate(newStyling: QRStyling) {
 <style scoped>
 h1 {
   line-height: 1.2;
+}
+
+/* Entrance animations */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out 0.1s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-delayed {
+  animation: fade-in 0.6s ease-out 0.2s forwards;
+  opacity: 0;
 }
 </style>

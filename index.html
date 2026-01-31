@@ -4,10 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
     <!-- Branding & SEO -->
-    <title>QRGen - Free & Private QR Code Generator</title>
-    <meta name="description" content="Generate high-quality QR codes instantly. Free, private, and ad-free." />
+    <title>QRGen - Free & Private QR Code Generator | No Sign-Up Required</title>
+    <meta name="description" content="Generate beautiful, high-quality QR codes instantly. 100% free, private, no ads, no watermarks, no sign-up. Customize colors, add logos, download PNG." />
+    <meta name="keywords" content="QR code generator, free QR code, QR code maker, custom QR code, QR code with logo, privacy QR code, no signup QR generator" />
+    <meta name="author" content="QRGen" />
+    <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#262b2f" />
+    <link rel="canonical" href="https://qrgen.app/" />
 
     <!-- Icons -->
     <link rel="icon" type="image/x-icon" href="/icons/favicon.ico" />
@@ -18,11 +26,42 @@
 
     <!-- Open Graph / Social -->
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://qrgen.app/" />
     <meta property="og:title" content="QRGen - Free & Private QR Code Generator" />
-    <meta property="og:description" content="Generate high-quality QR codes instantly. Free, private, and ad-free." />
-    <meta property="og:image" content="/branding/og-image.png" />
+    <meta property="og:description" content="Generate beautiful QR codes instantly. Free, private, and ad-free. Add custom logos and colors." />
+    <meta property="og:image" content="https://qrgen.app/branding/og-image.png" />
+    <meta property="og:site_name" content="QRGen" />
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:image" content="/branding/og-image.png" />
+    <meta property="twitter:title" content="QRGen - Free QR Code Generator" />
+    <meta property="twitter:description" content="Generate beautiful QR codes instantly. Free, private, and ad-free." />
+    <meta property="twitter:image" content="https://qrgen.app/branding/og-image.png" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "QRGen",
+      "description": "Generate beautiful, high-quality QR codes instantly. Free, private, no ads, no watermarks.",
+      "url": "https://qrgen.app",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Free QR code generation",
+        "Custom colors and logos",
+        "High-quality PNG download",
+        "No watermarks",
+        "No sign-up required",
+        "Privacy-focused"
+      ],
+      "screenshot": "https://qrgen.app/branding/og-image.png"
+    }
+    </script>
   </head>
   <body>
     <div id="app"></div>
