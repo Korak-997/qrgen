@@ -7,3 +7,7 @@ export { default as UploadZone } from './common/UploadZone.vue'
 
 // Layout Components
 export { default as AppNavbar } from './layout/AppNavbar.vue'
+
+// QR Components
+export { default as QRDisplay } from './qr/QRDisplay.vue'
+export { default as QRGeneratorForm } from './qr/QRGeneratorForm.vue'
