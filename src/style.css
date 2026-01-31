@@ -1,0 +1,22 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  --color-primary: oklch(0.6 0.2 260);
+  --color-accent: oklch(0.7 0.15 320);
+
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --radius-xl: 1.5rem;
+}
+
+@utility glass-panel {
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-glass);
+}
+
+body {
+  background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0a 100%);
+  min-height: 100vh;
+}
