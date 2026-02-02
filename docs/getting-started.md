@@ -16,7 +16,7 @@ This guide will help you set up QRGen for local development.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/qrgen.git
+git clone https://github.com/Korak-997/qrgen.git
 cd qrgen
 ```
 
