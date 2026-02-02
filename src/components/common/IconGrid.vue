@@ -7,6 +7,7 @@ export interface IconItem {
   name: string
   icon?: any  // Component or string
   svg?: string  // Raw SVG string
+  imageUrl?: string // URL to image file
   color?: string
 }
 
@@ -81,6 +82,13 @@ function handleSelect(item: IconItem) {
           :is="item.icon"
           class="w-6 h-6"
           :style="item.color ? { color: item.color } : {}"
+        />
+        <!-- Image URL -->
+        <img
+          v-else-if="item.imageUrl"
+          :src="item.imageUrl"
+          :alt="item.name"
+          class="w-6 h-6 object-contain"
         />
         <!-- SVG string -->
         <span

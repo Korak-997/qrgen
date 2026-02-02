@@ -81,13 +81,35 @@ const lucideIcons: IconItem[] = [
   { id: 'bookmark', name: 'Bookmark', icon: Bookmark }
 ]
 
-// Social items
-const socialItems: IconItem[] = SOCIAL_PLATFORMS.map(p => ({
-  id: p.id,
-  name: p.name,
-  svg: socialIcons[p.id],
-  color: p.color
-}))
+// Dynamic import of social icons from src/assets/social-icons
+const socialIconModules = import.meta.glob('@/assets/social-icons/*.svg', {
+  eager: true,
+  query: '?url',
+  import: 'default'
+})
+
+const fileSocialItems: IconItem[] = Object.entries(socialIconModules).map(([path, url]) => {
+  // Extract filename from path (e.g., /src/assets/social-icons/discord-1.svg -> discord-1)
+  const filename = path.split('/').pop()?.replace('.svg', '') || ''
+  // Format name: discord-1 -> Discord
+  const name = filename.split('-')[0].charAt(0).toUpperCase() + filename.split('-')[0].slice(1)
+
+  return {
+    id: filename,
+    name: name,
+    imageUrl: url as string
+  }
+})
+
+const socialItems: IconItem[] = [
+  ...SOCIAL_PLATFORMS.map(p => ({
+    id: p.id,
+    name: p.name,
+    svg: socialIcons[p.id],
+    color: p.color
+  })),
+  ...fileSocialItems
+]
 
 // Popular emojis for quick selection
 const popularEmojis = [
@@ -135,6 +157,13 @@ function handleIconSelect(item: IconItem) {
 }
 
 function handleSocialSelect(item: IconItem) {
+  // Handle file-based icons
+  if (item.imageUrl) {
+    emit('select', 'social', item.imageUrl)
+    emit('update:open', false)
+    return
+  }
+
   // Create colored SVG data URI
   const svg = socialIcons[item.id]
   if (!svg) return
