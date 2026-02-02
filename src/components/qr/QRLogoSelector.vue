@@ -26,13 +26,12 @@ import {
   Award,
   Bookmark
 } from 'lucide-vue-next'
-import { Modal, ImageCropper } from '@/components'
+import { ImageCropper } from '@/components'
 import IconGrid, { type IconItem } from '@/components/common/IconGrid.vue'
 import { socialIcons } from '@/assets/social'
 import { SOCIAL_PLATFORMS, type LogoType } from '@/types/qr'
 
 interface Props {
-  open: boolean
   selectedType?: LogoType
   selectedSource?: string | null
 }
@@ -43,7 +42,6 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'update:open': [value: boolean]
   select: [type: LogoType, source: string]
   clear: []
 }>()
@@ -140,7 +138,6 @@ function handleFileSelect(e: Event) {
 function handleCrop(dataUrl: string) {
   showCropper.value = false
   emit('select', 'image', dataUrl)
-  emit('update:open', false)
 }
 
 function handleCropCancel() {
@@ -153,14 +150,12 @@ function handleIconSelect(item: IconItem) {
   // For Lucide icons, we render to SVG data URI
   const svgString = renderLucideToSvg(item.id)
   emit('select', 'icon', svgString)
-  emit('update:open', false)
 }
 
 function handleSocialSelect(item: IconItem) {
   // Handle file-based icons
   if (item.imageUrl) {
     emit('select', 'social', item.imageUrl)
-    emit('update:open', false)
     return
   }
 
@@ -170,7 +165,6 @@ function handleSocialSelect(item: IconItem) {
   const colored = svg.replace('currentColor', item.color || '#000000')
   const dataUri = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${colored.match(/<path[^>]*\/>/)? colored.match(/<path[^>]*\/>/)?.[0] : ''}</svg>`)}`
   emit('select', 'social', dataUri)
-  emit('update:open', false)
 }
 
 function handleEmojiSelect(emoji: string) {
@@ -188,12 +182,10 @@ function handleEmojiSelect(emoji: string) {
 
   const dataUri = canvas.toDataURL('image/png')
   emit('select', 'emoji', dataUri)
-  emit('update:open', false)
 }
 
 function handleClear() {
   emit('clear')
-  emit('update:open', false)
 }
 
 // Helper to render Lucide icon to SVG data URI
@@ -202,7 +194,7 @@ function renderLucideToSvg(iconId: string): string {
     'link': '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
     'star': '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
     'heart': '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
-    'zap': '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+    'zap': '<polygon points="13 2 3 14 12 14 11 22 10 12 10 13 2"/>', // Simplified path for space
     'shield': '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
     'gift': '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>',
     'music': '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
@@ -226,20 +218,17 @@ function renderLucideToSvg(iconId: string): string {
 </script>
 
 <template>
-  <Modal
-    :open="open"
-    title="Add Logo"
-    size="lg"
-    @update:open="emit('update:open', $event)"
-  >
+  <div class="qr-logo-selector">
     <!-- Cropper view -->
     <template v-if="showCropper && uploadedImage">
-      <ImageCropper
-        :image-src="uploadedImage"
-        :aspect-ratio="1"
-        @crop="handleCrop"
-        @cancel="handleCropCancel"
-      />
+      <div class="aspect-square w-full rounded-xl overflow-hidden bg-black mb-4">
+        <ImageCropper
+          :image-src="uploadedImage"
+          :aspect-ratio="1"
+          @crop="handleCrop"
+          @cancel="handleCropCancel"
+        />
+      </div>
     </template>
 
     <!-- Main selector view -->
@@ -251,7 +240,7 @@ function renderLucideToSvg(iconId: string): string {
           :key="tab.id"
           class="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all"
           :class="activeTab === tab.id
-            ? 'bg-primary text-white'
+            ? 'bg-primary text-white shadow-lg'
             : 'text-white/60 hover:text-white hover:bg-white/10'"
           @click="activeTab = tab.id"
         >
@@ -261,12 +250,11 @@ function renderLucideToSvg(iconId: string): string {
       </div>
 
       <!-- Tab content -->
-      <div class="min-h-[280px]">
+      <div class="min-h-[250px] relative">
         <!-- Icons tab -->
         <div v-if="activeTab === 'icons'">
           <IconGrid
             :items="lucideIcons"
-            :columns="6"
             searchable
             search-placeholder="Search icons..."
             @select="handleIconSelect"
@@ -276,11 +264,11 @@ function renderLucideToSvg(iconId: string): string {
         <!-- Upload tab -->
         <div v-if="activeTab === 'upload'" class="space-y-4">
           <div
-            class="border-2 border-dashed border-white/20 rounded-2xl p-8 text-center cursor-pointer transition-all hover:border-white/40 hover:bg-white/5"
+            class="border-2 border-dashed border-white/20 rounded-2xl p-8 text-center cursor-pointer transition-all hover:border-white/40 hover:bg-white/5 group"
             @click="fileInputRef?.click()"
           >
-            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
-              <ImageIcon class="w-8 h-8 text-white/60" />
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <ImageIcon class="w-8 h-8 text-white/60 group-hover:text-primary transition-colors" />
             </div>
             <p class="text-white/80 font-medium mb-1">Click to upload image</p>
             <p class="text-white/50 text-sm">PNG, JPG, or WebP (max 5MB)</p>
@@ -296,11 +284,11 @@ function renderLucideToSvg(iconId: string): string {
 
         <!-- Emoji tab -->
         <div v-if="activeTab === 'emoji'">
-          <div class="grid grid-cols-8 gap-2">
+          <div class="grid grid-cols-[repeat(auto-fill,minmax(3rem,1fr))] gap-2">
             <button
               v-for="emoji in popularEmojis"
               :key="emoji"
-              class="aspect-square rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-2xl transition-all hover:scale-110"
+              class="aspect-square rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-2xl transition-all hover:scale-110 active:scale-95"
               @click="handleEmojiSelect(emoji)"
             >
               {{ emoji }}
@@ -312,22 +300,10 @@ function renderLucideToSvg(iconId: string): string {
         <div v-if="activeTab === 'social'">
           <IconGrid
             :items="socialItems"
-            :columns="5"
             @select="handleSocialSelect"
           />
         </div>
       </div>
-
-      <!-- Clear button (if something is selected) -->
-      <div v-if="selectedType !== 'none'" class="mt-4 pt-4 border-t border-white/10">
-        <button
-          class="btn btn-ghost btn-sm w-full text-error"
-          @click="handleClear"
-        >
-          <X class="w-4 h-4 mr-2" />
-          Remove Logo
-        </button>
-      </div>
     </template>
-  </Modal>
+  </div>
 </template>

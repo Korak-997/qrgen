@@ -167,7 +167,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="qr-display glass-panel rounded-3xl p-6 sm:p-8">
+  <div class="qr-display w-full">
     <!-- QR Code Container -->
     <div
       class="relative aspect-square w-full max-w-[280px] sm:max-w-[320px] mx-auto rounded-2xl overflow-hidden transition-all duration-500"

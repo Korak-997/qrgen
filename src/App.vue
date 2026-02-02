@@ -61,33 +61,55 @@ function handleStylingUpdate(newStyling: QRStyling) {
 
       <!-- Dashboard Grid -->
       <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start animate-slide-up" aria-label="QR Code Generator">
-        <!-- Left Column: Form + Customizer -->
-        <div class="lg:col-span-5 space-y-6">
+        <!-- Left Column: Editor (Form + Settings) -->
+        <div class="lg:col-span-7 xl:col-span-8 space-y-8">
           <!-- Form Panel -->
-          <QRGeneratorForm
-            v-model="inputValue"
-            :is-valid="isValid"
-            :error-message="errorMessage"
-            :is-downloading="isDownloading"
-            :can-download="isValid && !isEmpty"
-            @download="handleDownload"
-          />
+          <section aria-label="Content Configurations">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">1</span>
+              Enter Content
+            </h2>
+            <QRGeneratorForm
+              v-model="inputValue"
+              :is-valid="isValid"
+              :error-message="errorMessage"
+              :is-downloading="isDownloading"
+              :can-download="isValid && !isEmpty"
+              @download="handleDownload"
+            />
+          </section>
 
           <!-- Customizer Panel -->
-          <QRCustomizer
-            :styling="styling"
-            @update:styling="handleStylingUpdate"
-          />
+          <section aria-label="Design Customization">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">2</span>
+              Customize Design
+            </h2>
+            <QRCustomizer
+              :styling="styling"
+              @update:styling="handleStylingUpdate"
+            />
+          </section>
         </div>
 
-        <!-- Right Column: QR Display -->
-        <div class="lg:col-span-7">
-          <QRDisplay
-            ref="qrDisplayRef"
-            :value="qrValue"
-            :size="300"
-            :styling="styling"
-          />
+        <!-- Right Column: Sticky Preview -->
+        <div class="lg:col-span-5 xl:col-span-4 sticky top-8 self-start space-y-6">
+          <div class="glass-panel p-6 rounded-3xl flex flex-col items-center text-center">
+            <h2 class="text-xl font-semibold text-white mb-2">Live Preview</h2>
+            <p class="text-white/50 text-sm mb-6">Updates instantly as you type</p>
+
+            <QRDisplay
+              ref="qrDisplayRef"
+              :value="qrValue"
+              :size="300"
+              :styling="styling"
+            />
+
+            <!-- Download Hint -->
+            <p class="text-white/30 text-xs mt-6 max-w-[200px]">
+              High quality PNG with transparent background support
+            </p>
+          </div>
         </div>
       </section>
 
