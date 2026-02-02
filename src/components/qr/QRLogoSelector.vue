@@ -6,7 +6,6 @@ import {
   Share2,
   Sparkles,
   Upload,
-  X,
   Link,
   Star,
   Heart,
@@ -90,7 +89,8 @@ const fileSocialItems: IconItem[] = Object.entries(socialIconModules).map(([path
   // Extract filename from path (e.g., /src/assets/social-icons/discord-1.svg -> discord-1)
   const filename = path.split('/').pop()?.replace('.svg', '') || ''
   // Format name: discord-1 -> Discord
-  const name = filename.split('-')[0].charAt(0).toUpperCase() + filename.split('-')[0].slice(1)
+  const namePart = filename.split('-')[0] ?? ''
+  const name = namePart.charAt(0).toUpperCase() + namePart.slice(1)
 
   return {
     id: filename,
@@ -184,9 +184,7 @@ function handleEmojiSelect(emoji: string) {
   emit('select', 'emoji', dataUri)
 }
 
-function handleClear() {
-  emit('clear')
-}
+
 
 // Helper to render Lucide icon to SVG data URI
 function renderLucideToSvg(iconId: string): string {

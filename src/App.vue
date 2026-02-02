@@ -174,7 +174,7 @@ function handleStylingUpdate(newStyling: QRStyling) {
             Back to Top
           </a>
           <span class="hidden sm:inline text-white/20">•</span>
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="text-white/40 hover:text-white/70 text-sm transition-colors">
+          <a href="https://github.com/Korak-997/qrgen" target="_blank" rel="noopener noreferrer" class="text-white/40 hover:text-white/70 text-sm transition-colors">
             GitHub
           </a>
           <span class="hidden sm:inline text-white/20">•</span>
