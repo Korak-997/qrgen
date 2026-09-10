@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import { Link, Download } from 'lucide-vue-next'
+import { computed } from 'vue'
+import { Link, Type, Hash, Binary, Download } from 'lucide-vue-next'
 import { AppInput, AppButton, AppAlert } from '@/components'
+import { QR_CONTENT_TYPES, type QRContentType } from '@/types/qr'
 
 interface Props {
   modelValue: string
+  contentType: QRContentType
   isValid: boolean
   errorMessage?: string
   isDownloading?: boolean
   canDownload?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   errorMessage: '',
   isDownloading: false,
   canDownload: false
@@ -18,8 +21,22 @@ withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
+  'update:contentType': [contentType: QRContentType]
   'download': []
 }>()
+
+const CONTENT_TYPE_ICONS: Record<QRContentType, typeof Link> = {
+  text: Type,
+  url: Link,
+  number: Hash,
+  base64: Binary
+}
+
+const activeContentType = computed(() =>
+  QR_CONTENT_TYPES.find((option) => option.id === props.contentType) ?? QR_CONTENT_TYPES[0]
+)
+
+const inputType = computed(() => (props.contentType === 'url' ? 'url' : 'text'))
 </script>
 
 <template>
@@ -30,17 +47,36 @@ const emit = defineEmits<{
         Generate QR Code
       </h2>
       <p class="text-white/60 text-sm">
-        Enter any URL and get a high-quality QR code instantly.
+        Choose a content type and get a high-quality QR code instantly.
       </p>
+    </div>
+
+    <!-- Content Type Selector -->
+    <div class="flex flex-wrap gap-2 mb-4" role="tablist" aria-label="QR content type">
+      <button
+        v-for="option in QR_CONTENT_TYPES"
+        :key="option.id"
+        type="button"
+        role="tab"
+        :aria-selected="option.id === contentType"
+        class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+        :class="option.id === contentType
+          ? 'bg-primary/20 border border-primary text-white'
+          : 'bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 hover:text-white/80'"
+        @click="emit('update:contentType', option.id)"
+      >
+        <component :is="CONTENT_TYPE_ICONS[option.id]" class="w-4 h-4" />
+        {{ option.label }}
+      </button>
     </div>
 
     <!-- Input -->
     <AppInput
       :model-value="modelValue"
-      label="URL"
-      type="url"
-      placeholder="https://example.com"
-      :icon="Link"
+      :label="activeContentType.label"
+      :type="inputType"
+      :placeholder="activeContentType.placeholder"
+      :icon="CONTENT_TYPE_ICONS[contentType]"
       :error="errorMessage"
       size="lg"
       @update:model-value="emit('update:modelValue', $event)"
