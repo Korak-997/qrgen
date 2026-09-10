@@ -7,11 +7,13 @@ import { DEFAULT_QR_STYLING } from '@/types/qr'
 
 interface Props {
   value: string
+  qrMode?: 'Numeric' | 'Byte'
   size?: number
   styling?: Partial<QRStyling>
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  qrMode: 'Byte',
   size: 280,
   styling: () => ({})
 })
@@ -25,16 +27,6 @@ const mergedStyling = computed(() => ({
 }))
 
 const hasValue = computed(() => props.value.length > 0)
-
-// Add protocol if missing for better QR scanning
-const normalizedValue = computed(() => {
-  const val = props.value.trim()
-  if (!val) return ''
-  if (!/^https?:\/\//i.test(val)) {
-    return `https://${val}`
-  }
-  return val
-})
 
 // QR Code instance and container ref
 const containerRef = ref<HTMLDivElement | null>(null)
@@ -70,11 +62,11 @@ function createOptions() {
   return {
     width: props.size,
     height: props.size,
-    data: normalizedValue.value || 'https://example.com',
+    data: props.value || 'https://example.com',
     margin: 8,
     qrOptions: {
       typeNumber: 0 as const,
-      mode: 'Byte' as const,
+      mode: props.qrMode,
       errorCorrectionLevel: 'H' as const
     },
     dotsOptions: {
@@ -123,7 +115,7 @@ function updateQRCode() {
 }
 
 // Watch for changes to styling and data
-watch([() => props.value, () => props.size, mergedStyling], () => {
+watch([() => props.value, () => props.qrMode, () => props.size, mergedStyling], () => {
   if (hasValue.value) {
     nextTick(() => {
       updateQRCode()
@@ -203,7 +195,7 @@ defineExpose({
           class="absolute inset-0 flex flex-col items-center justify-center gap-4 text-white/40"
         >
           <QrCode class="w-16 h-16 sm:w-20 sm:h-20" />
-          <p class="text-sm font-medium">Enter a URL to generate</p>
+          <p class="text-sm font-medium">Enter content to generate</p>
         </div>
       </Transition>
     </div>

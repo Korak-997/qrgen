@@ -6,6 +6,7 @@
 export type LogoType = 'none' | 'icon' | 'image' | 'emoji' | 'social'
 export type DotStyle = 'square' | 'rounded' | 'dots' | 'classy' | 'classy-rounded'
 export type CornerStyle = 'square' | 'dot' | 'extra-rounded'
+export type QRContentType = 'text' | 'url' | 'number' | 'base64'
 
 export interface QRLogo {
   type: LogoType
@@ -83,3 +84,13 @@ export const SOCIAL_PLATFORMS = [
 ] as const
 
 export type SocialPlatformId = typeof SOCIAL_PLATFORMS[number]['id']
+
+// Supported QR content types, each with its own validation and encoding
+// (see src/utils/qrContentEncoders.ts)
+export const QR_CONTENT_TYPES = [
+  { id: 'text', label: 'Text', placeholder: 'Enter any text' },
+  { id: 'url', label: 'URL', placeholder: 'https://example.com' },
+  { id: 'number', label: 'Number', placeholder: '0123456789' },
+  { id: 'base64', label: 'Base64', placeholder: 'SGVsbG8gd29ybGQ=' }
+] as const satisfies ReadonlyArray<{ id: QRContentType; label: string; placeholder: string }>
+

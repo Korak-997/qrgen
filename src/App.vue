@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { AppNavbar, QRDisplay, QRGeneratorForm, QRCustomizer, FAQSection } from '@/components'
-import { useQRCode, useDownload } from '@/composables'
+import { useQRContent, useDownload } from '@/composables'
 import { DEFAULT_QR_STYLING, type QRStyling } from '@/types/qr'
 
 // Composables
-const { inputValue, qrValue, isValid, isEmpty, errorMessage } = useQRCode()
+const { contentType, inputValue, qrValue, qrMode, isValid, isEmpty, errorMessage, setContentType } = useQRContent()
 const { isDownloading, downloadCanvas } = useDownload()
 
 // Styling state
@@ -71,10 +71,12 @@ function handleStylingUpdate(newStyling: QRStyling) {
             </h2>
             <QRGeneratorForm
               v-model="inputValue"
+              :content-type="contentType"
               :is-valid="isValid"
               :error-message="errorMessage"
               :is-downloading="isDownloading"
               :can-download="isValid && !isEmpty"
+              @update:content-type="setContentType"
               @download="handleDownload"
             />
           </section>
@@ -101,6 +103,7 @@ function handleStylingUpdate(newStyling: QRStyling) {
             <QRDisplay
               ref="qrDisplayRef"
               :value="qrValue"
+              :qr-mode="qrMode"
               :size="300"
               :styling="styling"
             />
@@ -123,8 +126,8 @@ function handleStylingUpdate(newStyling: QRStyling) {
             <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-2xl font-bold text-primary group-hover:scale-110 transition-transform duration-300">
               1
             </div>
-            <h3 class="font-semibold text-white mb-2">Enter URL</h3>
-            <p class="text-white/50 text-sm">Paste any website link, social profile, or custom URL</p>
+            <h3 class="font-semibold text-white mb-2">Enter Content</h3>
+            <p class="text-white/50 text-sm">Add a URL, plain text, a number, or a base64 string</p>
           </div>
           <div class="text-center group">
             <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-2xl font-bold text-primary group-hover:scale-110 transition-transform duration-300">
