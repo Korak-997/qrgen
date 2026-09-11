@@ -72,18 +72,18 @@ function toggle(index: number) {
 
         <Transition
           enter-active-class="transition-all duration-300 ease-out"
-          enter-from-class="opacity-0 max-h-0"
-          enter-to-class="opacity-100 max-h-48"
+          enter-from-class="grid-rows-[0fr] opacity-0"
+          enter-to-class="grid-rows-[1fr] opacity-100"
           leave-active-class="transition-all duration-200 ease-in"
-          leave-from-class="opacity-100 max-h-48"
-          leave-to-class="opacity-0 max-h-0"
+          leave-from-class="grid-rows-[1fr] opacity-100"
+          leave-to-class="grid-rows-[0fr] opacity-0"
         >
           <div
             v-if="openIndex === index"
             :id="`faq-answer-${index}`"
-            class="px-5 sm:px-6 pb-5 sm:pb-6 overflow-hidden"
+            class="grid grid-rows-[1fr]"
           >
-            <p class="text-white/60 text-sm leading-relaxed">
+            <p class="text-white/60 text-sm leading-relaxed px-5 sm:px-6 pb-5 sm:pb-6 overflow-hidden">
               {{ faq.answer }}
             </p>
           </div>

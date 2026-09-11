@@ -36,20 +36,9 @@ export interface QRLogo {
   size: number           // Percentage of QR width (15-30)
 }
 
-export interface QRGradient {
-  type: 'linear' | 'radial'
-  rotation?: number      // For linear gradient (0-360)
-  colorStops: Array<{
-    offset: number       // 0-1
-    color: string
-  }>
-}
-
 export interface QRColors {
   foreground: string
   background: string
-  useGradient: boolean
-  gradient?: QRGradient
 }
 
 export interface QRStyling {
@@ -68,8 +57,7 @@ export const DEFAULT_QR_LOGO: QRLogo = {
 
 export const DEFAULT_QR_COLORS: QRColors = {
   foreground: '#000000',
-  background: '#ffffff',
-  useGradient: false
+  background: '#ffffff'
 }
 
 export const DEFAULT_QR_STYLING: QRStyling = {

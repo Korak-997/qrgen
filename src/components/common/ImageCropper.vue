@@ -163,44 +163,49 @@ onUnmounted(() => {
     <!-- Controls -->
     <div class="flex items-center justify-center gap-2 mt-4">
       <button
+        type="button"
         class="btn btn-ghost btn-sm btn-circle min-h-11 min-w-11"
-        title="Zoom out"
+        aria-label="Zoom out"
         @click="adjustZoom(-0.2)"
       >
-        <ZoomOut class="w-4 h-4" />
+        <ZoomOut class="w-4 h-4" aria-hidden="true" />
       </button>
 
       <button
+        type="button"
         class="btn btn-ghost btn-sm btn-circle min-h-11 min-w-11"
-        title="Zoom in"
+        aria-label="Zoom in"
         @click="adjustZoom(0.2)"
       >
-        <ZoomIn class="w-4 h-4" />
+        <ZoomIn class="w-4 h-4" aria-hidden="true" />
       </button>
 
       <button
+        type="button"
         class="btn btn-ghost btn-sm btn-circle min-h-11 min-w-11"
-        title="Rotate"
+        aria-label="Rotate image 90 degrees"
         @click="rotate"
       >
-        <RotateCw class="w-4 h-4" />
+        <RotateCw class="w-4 h-4" aria-hidden="true" />
       </button>
     </div>
 
     <!-- Action buttons -->
     <div class="flex gap-3 mt-4">
       <button
+        type="button"
         class="btn btn-ghost flex-1"
         @click="handleCancel"
       >
-        <X class="w-4 h-4 mr-2" />
+        <X class="w-4 h-4 mr-2" aria-hidden="true" />
         Cancel
       </button>
       <button
+        type="button"
         class="btn btn-primary flex-1"
         @click="handleCrop"
       >
-        <Check class="w-4 h-4 mr-2" />
+        <Check class="w-4 h-4 mr-2" aria-hidden="true" />
         Apply
       </button>
     </div>

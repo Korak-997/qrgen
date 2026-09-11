@@ -260,10 +260,10 @@ function renderLucideToSvg(iconId: string): string {
         <button
           type="button"
           class="btn btn-ghost btn-sm btn-circle min-h-11 min-w-11 text-white/60 hover:text-error"
-          title="Remove logo"
+          aria-label="Remove logo"
           @click="emit('clear')"
         >
-          <X class="w-4 h-4" />
+          <X class="w-4 h-4" aria-hidden="true" />
         </button>
       </div>
 

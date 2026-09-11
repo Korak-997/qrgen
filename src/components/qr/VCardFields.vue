@@ -21,22 +21,24 @@ defineProps<Props>()
       :error="fieldErrors?.name"
       size="lg"
     />
-    <AppInput
-      v-model="fields.phone"
-      label="Phone Number"
-      type="tel"
-      placeholder="+1 555 123 4567"
-      :icon="Phone"
-      :error="fieldErrors?.phone"
-    />
-    <AppInput
-      v-model="fields.email"
-      label="Email"
-      type="email"
-      placeholder="jane@example.com"
-      :icon="Mail"
-      :error="fieldErrors?.email"
-    />
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <AppInput
+        v-model="fields.phone"
+        label="Phone Number"
+        type="tel"
+        placeholder="+1 555 123 4567"
+        :icon="Phone"
+        :error="fieldErrors?.phone"
+      />
+      <AppInput
+        v-model="fields.email"
+        label="Email"
+        type="email"
+        placeholder="jane@example.com"
+        :icon="Mail"
+        :error="fieldErrors?.email"
+      />
+    </div>
     <AppInput
       v-model="fields.org"
       label="Organization"

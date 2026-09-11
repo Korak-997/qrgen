@@ -131,7 +131,7 @@ const inputType = computed(() => (props.contentType === 'url' ? 'url' : 'text'))
     </AppButton>
 
     <!-- Info text -->
-    <p class="text-center text-white/40 text-xs mt-4">
+    <p class="text-center text-white/60 text-xs mt-4">
       Free • No watermarks • High quality
     </p>
   </div>

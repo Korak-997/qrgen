@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Menu, X } from 'lucide-vue-next'
+import { Menu, X, Github } from 'lucide-vue-next'
 
 interface NavLink {
   label: string
   href: string
-  active?: boolean
 }
 
 interface Props {
@@ -48,34 +47,37 @@ function toggleMobileMenu() {
             v-for="link in links"
             :key="link.href"
             :href="link.href"
-            class="relative px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-lg"
-            :class="link.active ? 'text-white' : 'text-white/60 hover:text-white hover:bg-white/5'"
+            class="px-4 py-2 text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-colors duration-200 rounded-lg"
           >
             {{ link.label }}
-            <!-- Active indicator -->
-            <span
-              v-if="link.active"
-              class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[var(--color-primary)]"
-            />
           </a>
         </div>
 
-        <!-- CTA Button (Desktop) -->
+        <!-- CTA Link (Desktop) -->
         <div class="hidden md:block">
           <slot name="cta">
-            <button class="btn btn-sm btn-primary">
-              Get Started
-            </button>
+            <a
+              href="https://github.com/Korak-997/qrgen"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="nav-cta inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300"
+            >
+              <Github class="w-4 h-4" aria-hidden="true" />
+              GitHub
+            </a>
           </slot>
         </div>
 
         <!-- Mobile menu button -->
         <button
-          class="md:hidden p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+          class="md:hidden p-2 min-h-11 min-w-11 flex items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+          :aria-label="isMobileMenuOpen ? 'Close menu' : 'Open menu'"
+          aria-haspopup="true"
+          :aria-expanded="isMobileMenuOpen"
           @click="toggleMobileMenu"
         >
-          <Menu v-if="!isMobileMenuOpen" class="w-6 h-6" />
-          <X v-else class="w-6 h-6" />
+          <Menu v-if="!isMobileMenuOpen" class="w-6 h-6" aria-hidden="true" />
+          <X v-else class="w-6 h-6" aria-hidden="true" />
         </button>
       </div>
     </div>
@@ -98,8 +100,7 @@ function toggleMobileMenu() {
             v-for="link in links"
             :key="link.href"
             :href="link.href"
-            class="block px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"
-            :class="link.active ? 'bg-[var(--color-primary)]/20 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white'"
+            class="block px-4 py-3 min-h-11 rounded-xl text-sm font-medium text-white/70 hover:bg-white/5 hover:text-white transition-all duration-200"
             @click="isMobileMenuOpen = false"
           >
             {{ link.label }}
@@ -109,9 +110,15 @@ function toggleMobileMenu() {
         <!-- Mobile CTA -->
         <div class="px-4 mt-4">
           <slot name="cta">
-            <button class="btn btn-primary btn-block">
-              Get Started
-            </button>
+            <a
+              href="https://github.com/Korak-997/qrgen"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="nav-cta flex items-center justify-center gap-2 px-4 py-3 min-h-11 rounded-xl text-sm font-semibold transition-all duration-300"
+            >
+              <Github class="w-4 h-4" aria-hidden="true" />
+              GitHub
+            </a>
           </slot>
         </div>
       </div>
@@ -123,16 +130,13 @@ function toggleMobileMenu() {
 </template>
 
 <style scoped>
-.btn-primary {
+.nav-cta {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
-  border: none;
-  box-shadow: 0 4px 15px -3px color-mix(in srgb, var(--color-primary), transparent 60%);
+  box-shadow: var(--shadow-glass);
   color: #1a1a1a;
-  font-weight: 600;
 }
 
-.btn-primary:hover {
-  box-shadow: 0 6px 20px -3px color-mix(in srgb, var(--color-primary), transparent 50%);
+.nav-cta:hover {
   transform: translateY(-1px);
 }
 </style>

@@ -78,6 +78,9 @@ function applyPreset(preset: typeof COLOR_PRESETS[number]) {
           <button
             v-for="preset in COLOR_PRESETS"
             :key="preset.name"
+            type="button"
+            :aria-pressed="foreground === preset.fg && background === preset.bg"
+            :aria-label="`${preset.name} color preset`"
             class="group relative w-11 h-11 rounded-lg border-2 transition-all hover:scale-110"
             :class="foreground === preset.fg && background === preset.bg
               ? 'border-primary'
@@ -120,6 +123,8 @@ function applyPreset(preset: typeof COLOR_PRESETS[number]) {
           <button
             v-for="style in dotStyles"
             :key="style.id"
+            type="button"
+            :aria-pressed="dotStyle === style.id"
             class="flex-1 flex items-center justify-center gap-2 px-3 py-2 min-h-11 rounded-xl transition-all"
             :class="dotStyle === style.id
               ? 'bg-primary text-white'
@@ -139,6 +144,8 @@ function applyPreset(preset: typeof COLOR_PRESETS[number]) {
           <button
             v-for="style in cornerStyles"
             :key="style.id"
+            type="button"
+            :aria-pressed="cornerStyle === style.id"
             class="flex-1 px-3 py-2 min-h-11 rounded-xl text-sm transition-all"
             :class="cornerStyle === style.id
               ? 'bg-primary text-white'
