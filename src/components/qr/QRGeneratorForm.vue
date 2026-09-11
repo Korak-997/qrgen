@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Link, Type, Hash, Binary, Download } from 'lucide-vue-next'
-import { AppInput, AppButton, AppAlert } from '@/components'
+import { Link, Type, Hash, Binary, Wifi, Phone, Contact, Download } from 'lucide-vue-next'
+import { AppInput, AppButton, AppAlert, WifiFields, PhoneFields, VCardFields } from '@/components'
 import { QR_CONTENT_TYPES, type QRContentType } from '@/types/qr'
 
 interface Props {
-  modelValue: string
+  fields: Record<string, unknown>
   contentType: QRContentType
   isValid: boolean
   errorMessage?: string
+  fieldErrors?: Partial<Record<string, string>>
   isDownloading?: boolean
   canDownload?: boolean
 }
@@ -20,7 +21,6 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string]
   'update:contentType': [contentType: QRContentType]
   'download': []
 }>()
@@ -29,13 +29,19 @@ const CONTENT_TYPE_ICONS: Record<QRContentType, typeof Link> = {
   text: Type,
   url: Link,
   number: Hash,
-  base64: Binary
+  base64: Binary,
+  wifi: Wifi,
+  phone: Phone,
+  vcard: Contact
 }
+
+const SIMPLE_CONTENT_TYPES: readonly QRContentType[] = ['text', 'url', 'number', 'base64']
 
 const activeContentType = computed(() =>
   QR_CONTENT_TYPES.find((option) => option.id === props.contentType) ?? QR_CONTENT_TYPES[0]
 )
 
+const isSimpleContentType = computed(() => SIMPLE_CONTENT_TYPES.includes(props.contentType))
 const inputType = computed(() => (props.contentType === 'url' ? 'url' : 'text'))
 </script>
 
@@ -59,7 +65,7 @@ const inputType = computed(() => (props.contentType === 'url' ? 'url' : 'text'))
         type="button"
         role="tab"
         :aria-selected="option.id === contentType"
-        class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+        class="flex items-center gap-2 px-4 py-2 min-h-11 rounded-xl text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black"
         :class="option.id === contentType
           ? 'bg-primary/20 border border-primary text-white'
           : 'bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 hover:text-white/80'"
@@ -70,25 +76,42 @@ const inputType = computed(() => (props.contentType === 'url' ? 'url' : 'text'))
       </button>
     </div>
 
-    <!-- Input -->
+    <!-- Simple single-field types -->
     <AppInput
-      :model-value="modelValue"
+      v-if="isSimpleContentType"
+      v-model="(fields.value as string)"
       :label="activeContentType.label"
       :type="inputType"
       :placeholder="activeContentType.placeholder"
       :icon="CONTENT_TYPE_ICONS[contentType]"
       :error="errorMessage"
       size="lg"
-      @update:model-value="emit('update:modelValue', $event)"
     />
 
-    <!-- Error Alert -->
+    <!-- Structured multi-field types -->
+    <WifiFields
+      v-else-if="contentType === 'wifi'"
+      :fields="(fields as any)"
+      :field-errors="fieldErrors"
+    />
+    <PhoneFields
+      v-else-if="contentType === 'phone'"
+      :fields="(fields as any)"
+      :field-errors="fieldErrors"
+    />
+    <VCardFields
+      v-else-if="contentType === 'vcard'"
+      :fields="(fields as any)"
+      :field-errors="fieldErrors"
+    />
+
+    <!-- Error Alert (structured types show per-field errors inline instead) -->
     <AppAlert
-      v-if="errorMessage"
+      v-if="errorMessage && isSimpleContentType"
       type="error"
       class="mt-4"
       dismissible
-      @dismiss="emit('update:modelValue', '')"
+      @dismiss="fields.value = ''"
     >
       {{ errorMessage }}
     </AppAlert>
@@ -108,7 +131,7 @@ const inputType = computed(() => (props.contentType === 'url' ? 'url' : 'text'))
     </AppButton>
 
     <!-- Info text -->
-    <p class="text-center text-white/40 text-xs mt-4">
+    <p class="text-center text-white/60 text-xs mt-4">
       Free • No watermarks • High quality
     </p>
   </div>

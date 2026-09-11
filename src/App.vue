@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { AppNavbar, QRDisplay, QRGeneratorForm, QRCustomizer, FAQSection } from '@/components'
+import { useIntersectionObserver } from '@vueuse/core'
+import { Target, Zap, Gem } from 'lucide-vue-next'
+import { AppNavbar, AppAlert, QRDisplay, QRMiniPreviewBar, QRGeneratorForm, QRCustomizer, FAQSection } from '@/components'
 import { useQRContent, useDownload } from '@/composables'
 import { DEFAULT_QR_STYLING, type QRStyling } from '@/types/qr'
 
 // Composables
-const { contentType, inputValue, qrValue, qrMode, isValid, isEmpty, errorMessage, setContentType } = useQRContent()
-const { isDownloading, downloadCanvas } = useDownload()
+const { contentType, fields, qrValue, qrMode, previewLabel, isValid, isEmpty, errorMessage, fieldErrors, setContentType } = useQRContent()
+const { isDownloading, downloadError, downloadCanvas, clearError } = useDownload()
 
 // Styling state
 const styling = reactive<QRStyling>({
@@ -16,16 +18,37 @@ const styling = reactive<QRStyling>({
   cornerStyle: DEFAULT_QR_STYLING.cornerStyle
 })
 
-// Template ref for QR display
+// Template refs
 const qrDisplayRef = ref<InstanceType<typeof QRDisplay> | null>(null)
+const previewPanelRef = ref<HTMLElement | null>(null)
+
+// The mini preview bar surfaces only once the full preview panel has scrolled out of view
+const isPreviewPanelVisible = ref(true)
+useIntersectionObserver(previewPanelRef, ([entry]) => {
+  isPreviewPanelVisible.value = entry?.isIntersecting ?? true
+})
+
+const downloadSucceeded = ref(false)
+let downloadSuccessTimeout: ReturnType<typeof setTimeout> | undefined
 
 async function handleDownload() {
   const canvas = qrDisplayRef.value?.getCanvas() ?? null
-  await downloadCanvas(canvas, 'qrcode')
+  const succeeded = await downloadCanvas(canvas, 'qrcode')
+  if (succeeded) {
+    downloadSucceeded.value = true
+    clearTimeout(downloadSuccessTimeout)
+    downloadSuccessTimeout = setTimeout(() => {
+      downloadSucceeded.value = false
+    }, 3000)
+  }
 }
 
 function handleStylingUpdate(newStyling: QRStyling) {
   Object.assign(styling, newStyling)
+}
+
+function scrollToPreview() {
+  previewPanelRef.value?.scrollIntoView({ behavior: 'smooth', block: 'center' })
 }
 </script>
 
@@ -40,15 +63,16 @@ function handleStylingUpdate(newStyling: QRStyling) {
     </a>
 
     <!-- Navigation -->
-    <AppNavbar brand="QRGen">
-      <template #cta>
-        <!-- Empty slot to hide default CTA -->
-        <span />
-      </template>
-    </AppNavbar>
+    <AppNavbar
+      brand="QRGen"
+      :links="[
+        { label: 'How It Works', href: '#how-it-works-heading' },
+        { label: 'FAQ', href: '#faq-heading' },
+      ]"
+    />
 
     <!-- Main Content -->
-    <main id="main-content" class="flex-1 max-w-6xl mx-auto px-4 py-8 sm:py-12 w-full">
+    <main id="main-content" class="flex-1 max-w-6xl mx-auto px-4 py-8 sm:py-12 pb-24 lg:pb-12 w-full">
       <!-- Hero Text -->
       <header class="text-center mb-10 sm:mb-14 animate-fade-in">
         <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-white via-white/90 to-primary bg-clip-text text-transparent">
@@ -61,30 +85,66 @@ function handleStylingUpdate(newStyling: QRStyling) {
 
       <!-- Dashboard Grid -->
       <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start animate-slide-up" aria-label="QR Code Generator">
-        <!-- Left Column: Editor (Form + Settings) -->
-        <div class="lg:col-span-7 xl:col-span-8 space-y-8">
-          <!-- Form Panel -->
+        <div
+          ref="previewPanelRef"
+          class="order-first lg:order-last lg:col-span-5 xl:col-span-4 lg:sticky lg:top-8 self-start space-y-6"
+        >
+          <div class="glass-panel p-6 rounded-3xl flex flex-col items-center text-center">
+            <h2 class="text-xl font-semibold text-white mb-2 flex items-center gap-2 justify-center">
+              <span class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-bold shrink-0">1</span>
+              Live Preview
+            </h2>
+            <p class="text-white/50 text-sm mb-6">Updates instantly as you type</p>
+
+            <QRDisplay
+              ref="qrDisplayRef"
+              :value="qrValue"
+              :caption="previewLabel"
+              :qr-mode="qrMode"
+              :size="300"
+              :styling="styling"
+            />
+
+            <AppAlert
+              v-if="downloadError"
+              type="error"
+              dismissible
+              class="w-full mt-6 text-left"
+              @dismiss="clearError"
+            >
+              {{ downloadError }}
+            </AppAlert>
+
+            <!-- Download Hint -->
+            <p v-else class="text-white/50 text-xs mt-6 max-w-52">
+              High quality PNG with transparent background support
+            </p>
+          </div>
+        </div>
+
+        <div class="order-last lg:order-first lg:col-span-7 xl:col-span-8 space-y-8">
           <section aria-label="Content Configurations">
             <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-              <span class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">1</span>
+              <span class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">2</span>
               Enter Content
             </h2>
             <QRGeneratorForm
-              v-model="inputValue"
+              :fields="fields"
               :content-type="contentType"
               :is-valid="isValid"
               :error-message="errorMessage"
+              :field-errors="fieldErrors"
               :is-downloading="isDownloading"
               :can-download="isValid && !isEmpty"
+              :download-succeeded="downloadSucceeded"
               @update:content-type="setContentType"
               @download="handleDownload"
             />
           </section>
 
-          <!-- Customizer Panel -->
           <section aria-label="Design Customization">
             <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-              <span class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">2</span>
+              <span class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">3</span>
               Customize Design
             </h2>
             <QRCustomizer
@@ -93,30 +153,21 @@ function handleStylingUpdate(newStyling: QRStyling) {
             />
           </section>
         </div>
-
-        <!-- Right Column: Sticky Preview -->
-        <div class="lg:col-span-5 xl:col-span-4 sticky top-8 self-start space-y-6">
-          <div class="glass-panel p-6 rounded-3xl flex flex-col items-center text-center">
-            <h2 class="text-xl font-semibold text-white mb-2">Live Preview</h2>
-            <p class="text-white/50 text-sm mb-6">Updates instantly as you type</p>
-
-            <QRDisplay
-              ref="qrDisplayRef"
-              :value="qrValue"
-              :qr-mode="qrMode"
-              :size="300"
-              :styling="styling"
-            />
-
-            <!-- Download Hint -->
-            <p class="text-white/30 text-xs mt-6 max-w-[200px]">
-              High quality PNG with transparent background support
-            </p>
-          </div>
-        </div>
       </section>
 
-      <!-- How It Works Section -->
+
+      <QRMiniPreviewBar
+        :visible="!isPreviewPanelVisible"
+        :value="qrValue"
+        :caption="previewLabel"
+        :qr-mode="qrMode"
+        :styling="styling"
+        :is-downloading="isDownloading"
+        :can-download="isValid && !isEmpty"
+        @jump-to-preview="scrollToPreview"
+        @download="handleDownload"
+      />
+
       <section class="mt-16 sm:mt-24 animate-fade-in-delayed" aria-labelledby="how-it-works-heading">
         <h2 id="how-it-works-heading" class="text-2xl sm:text-3xl font-bold text-center text-white mb-8 sm:mb-12">
           How It Works
@@ -146,46 +197,43 @@ function handleStylingUpdate(newStyling: QRStyling) {
         </div>
       </section>
 
-      <!-- Features Section -->
       <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12 sm:mt-16" aria-label="Features">
         <article class="glass-panel rounded-2xl p-5 text-center hover:bg-white/10 transition-colors duration-300">
-          <div class="text-2xl mb-2">🎯</div>
+          <Target class="w-6 h-6 mx-auto mb-2 text-primary" aria-hidden="true" />
           <h3 class="font-semibold text-white mb-1">High Quality</h3>
           <p class="text-white/50 text-sm">Level H error correction for reliable scanning</p>
         </article>
         <article class="glass-panel rounded-2xl p-5 text-center hover:bg-white/10 transition-colors duration-300">
-          <div class="text-2xl mb-2">⚡</div>
+          <Zap class="w-6 h-6 mx-auto mb-2 text-primary" aria-hidden="true" />
           <h3 class="font-semibold text-white mb-1">Instant</h3>
           <p class="text-white/50 text-sm">Real-time generation as you type</p>
         </article>
         <article class="glass-panel rounded-2xl p-5 text-center hover:bg-white/10 transition-colors duration-300">
-          <div class="text-2xl mb-2">💎</div>
+          <Gem class="w-6 h-6 mx-auto mb-2 text-primary" aria-hidden="true" />
           <h3 class="font-semibold text-white mb-1">Free Forever</h3>
           <p class="text-white/50 text-sm">No hidden fees or premium tiers</p>
         </article>
       </section>
 
-      <!-- FAQ Section -->
       <FAQSection />
     </main>
 
-    <!-- Footer -->
     <footer class="text-center py-8 mt-auto border-t border-white/5">
       <div class="max-w-6xl mx-auto px-4">
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mb-4">
-          <a href="#main-content" class="text-white/40 hover:text-white/70 text-sm transition-colors">
+          <a href="#main-content" class="text-white/60 hover:text-white/90 text-sm transition-colors">
             Back to Top
           </a>
           <span class="hidden sm:inline text-white/20">•</span>
-          <a href="https://github.com/Korak-997/qrgen" target="_blank" rel="noopener noreferrer" class="text-white/40 hover:text-white/70 text-sm transition-colors">
+          <a href="https://github.com/Korak-997/qrgen" target="_blank" rel="noopener noreferrer" class="text-white/60 hover:text-white/90 text-sm transition-colors">
             GitHub
           </a>
           <span class="hidden sm:inline text-white/20">•</span>
-          <span class="text-white/40 text-sm">
+          <span class="text-white/60 text-sm">
             100% Free & Private
           </span>
         </div>
-        <p class="text-white/30 text-sm">
+        <p class="text-white/50 text-sm">
           Made with ❤️ • Open Source • © 2026 QRGen
         </p>
       </div>
@@ -198,7 +246,6 @@ h1 {
   line-height: 1.2;
 }
 
-/* Entrance animations */
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }

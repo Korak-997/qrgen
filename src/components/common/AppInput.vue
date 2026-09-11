@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { Component } from 'vue'
+import { useId, type Component } from 'vue'
 
 interface Props {
   modelValue: string
   label?: string
   placeholder?: string
-  type?: 'text' | 'url' | 'email' | 'password' | 'number'
+  type?: 'text' | 'url' | 'email' | 'password' | 'number' | 'tel'
   error?: string
   hint?: string
   disabled?: boolean
@@ -22,12 +22,15 @@ withDefaults(defineProps<Props>(), {
 defineEmits<{
   'update:modelValue': [value: string]
 }>()
+
+const inputId = useId()
+const helperTextId = useId()
 </script>
 
 <template>
   <div class="form-control w-full">
     <!-- Label -->
-    <label v-if="label" class="label">
+    <label v-if="label" class="label" :for="inputId">
       <span class="label-text text-white/80 font-medium">{{ label }}</span>
     </label>
 
@@ -43,10 +46,13 @@ defineEmits<{
 
       <!-- Input field -->
       <input
+        :id="inputId"
         :type="type"
         :value="modelValue"
         :placeholder="placeholder"
         :disabled="disabled"
+        :aria-describedby="(error || hint) ? helperTextId : undefined"
+        :aria-invalid="error ? 'true' : undefined"
         class="input w-full transition-all duration-300"
         :class="[
           `input-${size}`,
@@ -67,6 +73,7 @@ defineEmits<{
     <!-- Helper text -->
     <label v-if="error || hint" class="label">
       <span
+        :id="helperTextId"
         class="label-text-alt"
         :class="error ? 'text-error' : 'text-white/50'"
       >
@@ -83,7 +90,7 @@ defineEmits<{
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: var(--shadow-glass);
   color: white;
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-glass);
   padding-right: 1rem;
 }
 

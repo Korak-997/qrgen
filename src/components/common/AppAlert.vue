@@ -55,13 +55,10 @@ const alertClasses = computed(() => {
       class="alert relative overflow-hidden border backdrop-blur-md rounded-2xl p-4"
       :class="alertClasses"
     >
-      <!-- Subtle gradient overlay -->
       <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none" />
 
-      <!-- Icon -->
       <component :is="iconComponent" class="w-5 h-5 shrink-0 relative z-10" />
 
-      <!-- Content -->
       <div class="relative z-10 flex-1">
         <h3 v-if="title" class="font-semibold text-sm">{{ title }}</h3>
         <div class="text-sm opacity-90">
@@ -69,13 +66,14 @@ const alertClasses = computed(() => {
         </div>
       </div>
 
-      <!-- Dismiss button -->
       <button
         v-if="dismissible"
-        class="btn btn-ghost btn-sm btn-circle relative z-10 hover:bg-white/10"
+        type="button"
+        class="btn btn-ghost btn-sm btn-circle min-h-11 min-w-11 relative z-10 hover:bg-white/10"
+        aria-label="Dismiss"
         @click="emit('dismiss')"
       >
-        <X class="w-4 h-4" />
+        <X class="w-4 h-4" aria-hidden="true" />
       </button>
     </div>
   </Transition>

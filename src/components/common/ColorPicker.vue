@@ -65,7 +65,7 @@ const isSelected = (color: string) => inputValue.value.toLowerCase() === color.t
       <!-- Color swatch picker -->
       <label class="relative cursor-pointer">
         <div
-          class="w-10 h-10 rounded-xl border-2 border-white/20 transition-all hover:scale-105 hover:border-white/40"
+          class="w-11 h-11 rounded-xl border-2 border-white/20 transition-all hover:scale-105 hover:border-white/40"
           :style="{ backgroundColor: inputValue }"
         />
         <input
@@ -90,11 +90,12 @@ const isSelected = (color: string) => inputValue.value.toLowerCase() === color.t
     </div>
 
     <!-- Quick colors grid -->
+    <p class="text-xs text-white/50">Quick colors</p>
     <div class="flex flex-wrap gap-2">
       <button
         v-for="color in quickColors"
         :key="color"
-        class="w-7 h-7 rounded-lg border-2 transition-all hover:scale-110"
+        class="w-11 h-11 rounded-lg border-2 transition-all hover:scale-110"
         :class="isSelected(color) ? 'border-primary' : 'border-white/20'"
         :style="{ backgroundColor: color }"
         @click="selectColor(color)"

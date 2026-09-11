@@ -70,7 +70,7 @@ function updateCornerStyle(style: CornerStyle) {
 </script>
 
 <template>
-  <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
     <!-- Logo Trigger Card -->
     <div
       class="glass-panel rounded-3xl overflow-hidden h-fit transition-all duration-300 hover:bg-white/5 border border-white/5 hover:border-white/10 cursor-pointer group"
@@ -90,12 +90,22 @@ function updateCornerStyle(style: CornerStyle) {
         </div>
 
         <!-- Action Icon or Preview -->
-        <div v-if="hasLogo" class="relative w-10 h-10 rounded-lg bg-white p-1 shadow-sm">
-          <img
-            :src="styling.logo.source!"
-            alt="Current logo"
-            class="w-full h-full object-contain"
-          />
+        <div v-if="hasLogo" class="flex items-center gap-2">
+          <div class="relative w-10 h-10 rounded-lg bg-white p-1 shadow-sm">
+            <img
+              :src="styling.logo.source!"
+              alt="Current logo"
+              class="w-full h-full object-contain"
+            />
+          </div>
+          <button
+            type="button"
+            class="btn btn-ghost btn-sm btn-circle min-h-11 min-w-11 text-white/40 hover:text-error"
+            aria-label="Remove logo"
+            @click.stop="handleLogoClear"
+          >
+            <X class="w-4 h-4" aria-hidden="true" />
+          </button>
         </div>
         <ArrowRight
           v-else
@@ -159,11 +169,12 @@ function updateCornerStyle(style: CornerStyle) {
             <p class="text-primary text-xs capitalize">{{ styling.logo.type }}</p>
           </div>
           <button
-            class="btn btn-ghost btn-sm btn-circle text-error hover:bg-error/10"
+            type="button"
+            class="btn btn-ghost btn-sm btn-circle min-h-11 min-w-11 text-error hover:bg-error/10"
+            aria-label="Remove logo"
             @click="handleLogoClear"
-            title="Remove Logo"
           >
-            <X class="w-4 h-4" />
+            <X class="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
 

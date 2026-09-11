@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { ColorPicker } from '@/components'
 import { COLOR_PRESETS, type DotStyle, type CornerStyle } from '@/types/qr'
-import { Circle, Square, Grip } from 'lucide-vue-next'
+import { Circle, Square, Grip, Palette, Shapes } from 'lucide-vue-next'
 
 interface Props {
   foreground: string
@@ -11,6 +12,13 @@ interface Props {
 }
 
 defineProps<Props>()
+
+type SectionId = 'colors' | 'shape'
+const activeSection = ref<SectionId>('colors')
+const sections: { id: SectionId; label: string; icon: typeof Palette }[] = [
+  { id: 'colors', label: 'Colors', icon: Palette },
+  { id: 'shape', label: 'Shape', icon: Shapes }
+]
 
 const emit = defineEmits<{
   'update:foreground': [value: string]
@@ -41,80 +49,112 @@ function applyPreset(preset: typeof COLOR_PRESETS[number]) {
 </script>
 
 <template>
-  <div class="qr-color-picker space-y-6">
-    <!-- Color presets -->
-    <div>
-      <p class="text-sm font-medium text-white/80 mb-3">Quick Presets</p>
-      <div class="flex flex-wrap gap-2">
-        <button
-          v-for="preset in COLOR_PRESETS"
-          :key="preset.name"
-          class="group relative w-8 h-8 rounded-lg border-2 transition-all hover:scale-110"
-          :class="foreground === preset.fg && background === preset.bg
-            ? 'border-primary'
-            : 'border-white/20'"
-          :title="preset.name"
-          @click="applyPreset(preset)"
-        >
-          <div class="absolute inset-0.5 rounded-md overflow-hidden">
-            <div class="absolute inset-0" :style="{ backgroundColor: preset.bg }" />
-            <div
-              class="absolute inset-1 rounded-sm"
-              :style="{ backgroundColor: preset.fg }"
-            />
-          </div>
-        </button>
-      </div>
+  <div class="qr-color-picker">
+    <!-- Section tabs -->
+    <div class="flex gap-1 p-1 bg-white/5 rounded-xl mb-6" role="tablist" aria-label="Color settings section">
+      <button
+        v-for="section in sections"
+        :key="section.id"
+        type="button"
+        role="tab"
+        :aria-selected="activeSection === section.id"
+        class="flex-1 flex items-center justify-center gap-2 px-3 py-2 min-h-11 rounded-lg text-sm font-medium transition-all"
+        :class="activeSection === section.id
+          ? 'bg-primary text-white shadow-lg'
+          : 'text-white/60 hover:text-white hover:bg-white/10'"
+        @click="activeSection = section.id"
+      >
+        <component :is="section.icon" class="w-4 h-4" />
+        {{ section.label }}
+      </button>
     </div>
 
-    <!-- Foreground color -->
-    <ColorPicker
-      :model-value="foreground"
-      label="QR Code Color"
-      @update:model-value="emit('update:foreground', $event)"
-    />
-
-    <!-- Background color -->
-    <ColorPicker
-      :model-value="background"
-      label="Background Color"
-      @update:model-value="emit('update:background', $event)"
-    />
-
-    <!-- Dot style -->
-    <div>
-      <p class="text-sm font-medium text-white/80 mb-3">Dot Style</p>
-      <div class="flex gap-2">
-        <button
-          v-for="style in dotStyles"
-          :key="style.id"
-          class="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl transition-all"
-          :class="dotStyle === style.id
-            ? 'bg-primary text-white'
-            : 'bg-white/5 text-white/60 hover:bg-white/10'"
-          @click="emit('update:dotStyle', style.id)"
-        >
-          <component :is="style.icon" class="w-4 h-4" />
-          <span class="text-sm">{{ style.label }}</span>
-        </button>
+    <!-- Colors section -->
+    <div v-if="activeSection === 'colors'" class="space-y-6">
+      <!-- Color presets -->
+      <div>
+        <p class="text-sm font-medium text-white/80 mb-3">Quick Presets</p>
+        <div class="flex flex-wrap gap-2">
+          <button
+            v-for="preset in COLOR_PRESETS"
+            :key="preset.name"
+            type="button"
+            :aria-pressed="foreground === preset.fg && background === preset.bg"
+            :aria-label="`${preset.name} color preset`"
+            class="group relative w-11 h-11 rounded-lg border-2 transition-all hover:scale-110"
+            :class="foreground === preset.fg && background === preset.bg
+              ? 'border-primary'
+              : 'border-white/20'"
+            :title="preset.name"
+            @click="applyPreset(preset)"
+          >
+            <div class="absolute inset-0.5 rounded-md overflow-hidden">
+              <div class="absolute inset-0" :style="{ backgroundColor: preset.bg }" />
+              <div
+                class="absolute inset-1 rounded-sm"
+                :style="{ backgroundColor: preset.fg }"
+              />
+            </div>
+          </button>
+        </div>
       </div>
+
+      <!-- Foreground color -->
+      <ColorPicker
+        :model-value="foreground"
+        label="QR Code Color"
+        @update:model-value="emit('update:foreground', $event)"
+      />
+
+      <!-- Background color -->
+      <ColorPicker
+        :model-value="background"
+        label="Background Color"
+        @update:model-value="emit('update:background', $event)"
+      />
     </div>
 
-    <!-- Corner style -->
-    <div>
-      <p class="text-sm font-medium text-white/80 mb-3">Corner Style</p>
-      <div class="flex gap-2">
-        <button
-          v-for="style in cornerStyles"
-          :key="style.id"
-          class="flex-1 px-3 py-2 rounded-xl text-sm transition-all"
-          :class="cornerStyle === style.id
-            ? 'bg-primary text-white'
-            : 'bg-white/5 text-white/60 hover:bg-white/10'"
-          @click="emit('update:cornerStyle', style.id)"
-        >
-          {{ style.label }}
-        </button>
+    <!-- Shape section -->
+    <div v-else class="space-y-6">
+      <!-- Dot style -->
+      <div>
+        <p class="text-sm font-medium text-white/80 mb-3">Dot Style</p>
+        <div class="flex gap-2">
+          <button
+            v-for="style in dotStyles"
+            :key="style.id"
+            type="button"
+            :aria-pressed="dotStyle === style.id"
+            class="flex-1 flex items-center justify-center gap-2 px-3 py-2 min-h-11 rounded-xl transition-all"
+            :class="dotStyle === style.id
+              ? 'bg-primary text-white'
+              : 'bg-white/5 text-white/60 hover:bg-white/10'"
+            @click="emit('update:dotStyle', style.id)"
+          >
+            <component :is="style.icon" class="w-4 h-4" />
+            <span class="text-sm">{{ style.label }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Corner style -->
+      <div>
+        <p class="text-sm font-medium text-white/80 mb-3">Corner Style</p>
+        <div class="flex gap-2">
+          <button
+            v-for="style in cornerStyles"
+            :key="style.id"
+            type="button"
+            :aria-pressed="cornerStyle === style.id"
+            class="flex-1 px-3 py-2 min-h-11 rounded-xl text-sm transition-all"
+            :class="cornerStyle === style.id
+              ? 'bg-primary text-white'
+              : 'bg-white/5 text-white/60 hover:bg-white/10'"
+            @click="emit('update:cornerStyle', style.id)"
+          >
+            {{ style.label }}
+          </button>
+        </div>
       </div>
     </div>
   </div>

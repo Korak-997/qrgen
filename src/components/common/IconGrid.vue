@@ -46,7 +46,6 @@ function handleSelect(item: IconItem) {
 
 <template>
   <div class="icon-grid">
-    <!-- Search -->
     <div v-if="searchable" class="relative mb-3">
       <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
       <input
@@ -57,7 +56,6 @@ function handleSelect(item: IconItem) {
       />
     </div>
 
-    <!-- Grid -->
     <div class="grid grid-cols-[repeat(auto-fill,minmax(2.5rem,1fr))] gap-2">
       <button
         v-for="item in filteredItems"
@@ -65,27 +63,24 @@ function handleSelect(item: IconItem) {
         class="aspect-square rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95"
         :class="[
           selected === item.id
-            ? 'bg-primary/20 border-2 border-primary shadow-[0_0_10px_rgba(var(--primary-rgb),0.3)]'
+            ? 'bg-primary/20 border-2 border-primary shadow-[0_0_10px_-2px] shadow-primary/50'
             : 'bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20'
         ]"
         :title="item.name"
         @click="handleSelect(item)"
       >
-        <!-- Component icon -->
         <component
           v-if="item.icon"
           :is="item.icon"
           class="w-5 h-5 transition-transform"
           :style="item.color ? { color: item.color } : {}"
         />
-        <!-- Image URL -->
         <img
           v-else-if="item.imageUrl"
           :src="item.imageUrl"
           :alt="item.name"
           class="w-5 h-5 object-contain"
         />
-        <!-- SVG string -->
         <span
           v-else-if="item.svg"
           class="w-5 h-5 flex items-center justify-center"
@@ -98,10 +93,9 @@ function handleSelect(item: IconItem) {
       </button>
     </div>
 
-    <!-- Empty state -->
     <div
       v-if="filteredItems.length === 0"
-      class="text-center py-8 text-white/40 text-sm italic"
+      class="text-center py-8 text-white/60 text-sm italic"
     >
       No items found
     </div>

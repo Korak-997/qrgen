@@ -7,16 +7,21 @@ import { DEFAULT_QR_STYLING } from '@/types/qr'
 
 interface Props {
   value: string
+  caption?: string
   qrMode?: 'Numeric' | 'Byte'
   size?: number
   styling?: Partial<QRStyling>
+  compact?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  caption: '',
   qrMode: 'Byte',
   size: 280,
-  styling: () => ({})
+  styling: () => ({}),
+  compact: false
 })
+const displayCaption = computed(() => props.caption || props.value)
 
 // Merge styling with defaults
 const mergedStyling = computed(() => ({
@@ -159,11 +164,14 @@ defineExpose({
 </script>
 
 <template>
-  <div class="qr-display w-full">
+  <div class="qr-display w-full" :class="{ 'qr-display--compact': compact }">
     <!-- QR Code Container -->
     <div
-      class="relative aspect-square w-full max-w-[280px] sm:max-w-[320px] mx-auto rounded-2xl overflow-hidden transition-all duration-500"
-      :class="hasValue ? '' : 'bg-white/5'"
+      class="relative aspect-square w-full overflow-hidden transition-all duration-500"
+      :class="[
+        compact ? '' : 'max-w-xs sm:max-w-sm mx-auto rounded-2xl',
+        hasValue ? '' : 'bg-white/5'
+      ]"
     >
       <!-- Active QR Code -->
       <Transition
@@ -192,20 +200,21 @@ defineExpose({
       >
         <div
           v-if="!hasValue"
-          class="absolute inset-0 flex flex-col items-center justify-center gap-4 text-white/40"
+          class="absolute inset-0 flex flex-col items-center justify-center text-white/60"
+          :class="compact ? 'gap-0' : 'gap-4'"
         >
-          <QrCode class="w-16 h-16 sm:w-20 sm:h-20" />
-          <p class="text-sm font-medium">Enter content to generate</p>
+          <QrCode :class="compact ? 'w-1/2 h-1/2' : 'w-16 h-16 sm:w-20 sm:h-20'" />
+          <p v-if="!compact" class="text-sm font-medium">Enter content to generate</p>
         </div>
       </Transition>
     </div>
 
     <!-- Caption -->
     <p
-      v-if="hasValue"
-      class="text-center text-white/50 text-sm mt-4 truncate px-2"
+      v-if="hasValue && !compact"
+      class="w-full text-center text-white/50 text-sm mt-4 truncate px-2"
     >
-      {{ value }}
+      {{ displayCaption }}
     </p>
   </div>
 </template>
@@ -223,5 +232,10 @@ defineExpose({
   width: 100% !important;
   height: 100% !important;
   border-radius: 0.75rem;
+}
+
+.qr-display--compact .qr-container :deep(canvas),
+.qr-display--compact .qr-container :deep(svg) {
+  border-radius: 0;
 }
 </style>
