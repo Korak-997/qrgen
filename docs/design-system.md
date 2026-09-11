@@ -18,11 +18,11 @@ The application uses an elegant dark theme:
 
 ## Colors
 
-### Primary Palette (OKLCH)
+### Primary Palette
 
 ```css
---color-primary: oklch(0.6 0.2 260);   /* Purple */
---color-accent: oklch(0.7 0.15 320);   /* Pink/Magenta */
+--color-primary: #3cfa78;  /* Neon green */
+--color-accent: #0af0e6;   /* Cyan */
 ```
 
 ### Semantic Colors
@@ -106,10 +106,10 @@ Consistent spacing using Tailwind's scale:
 Soft, rounded corners throughout:
 
 ```css
---radius-sm: 0.5rem;   /* Buttons, inputs */
---radius-lg: 1rem;     /* Cards */
---radius-xl: 1.5rem;   /* Large panels */
---radius-full: 9999px; /* Pills, avatars */
+--radius-lg: 0.5rem;    /* Buttons, inputs, tabs (Tailwind default) */
+--radius-2xl: 1rem;     /* Cards (Tailwind default) */
+--radius-glass: 1.5rem; /* Large glass panels, app-specific token */
+--radius-full: 9999px;  /* Pills, avatars */
 ```
 
 ---

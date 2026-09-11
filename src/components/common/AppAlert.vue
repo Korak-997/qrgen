@@ -72,7 +72,7 @@ const alertClasses = computed(() => {
       <!-- Dismiss button -->
       <button
         v-if="dismissible"
-        class="btn btn-ghost btn-sm btn-circle relative z-10 hover:bg-white/10"
+        class="btn btn-ghost btn-sm btn-circle min-h-11 min-w-11 relative z-10 hover:bg-white/10"
         @click="emit('dismiss')"
       >
         <X class="w-4 h-4" />

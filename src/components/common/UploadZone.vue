@@ -193,7 +193,7 @@ function formatFileSize(bytes: number): string {
 
           <!-- Remove button -->
           <button
-            class="btn btn-ghost btn-sm btn-circle text-white/50 hover:text-error hover:bg-error/10"
+            class="btn btn-ghost btn-sm btn-circle min-h-11 min-w-11 text-white/50 hover:text-error hover:bg-error/10"
             @click.stop="removeFile(index)"
           >
             <X class="w-4 h-4" />

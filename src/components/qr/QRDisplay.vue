@@ -7,16 +7,19 @@ import { DEFAULT_QR_STYLING } from '@/types/qr'
 
 interface Props {
   value: string
+  caption?: string
   qrMode?: 'Numeric' | 'Byte'
   size?: number
   styling?: Partial<QRStyling>
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  caption: '',
   qrMode: 'Byte',
   size: 280,
   styling: () => ({})
 })
+const displayCaption = computed(() => props.caption || props.value)
 
 // Merge styling with defaults
 const mergedStyling = computed(() => ({
@@ -203,9 +206,9 @@ defineExpose({
     <!-- Caption -->
     <p
       v-if="hasValue"
-      class="text-center text-white/50 text-sm mt-4 truncate px-2"
+      class="w-full text-center text-white/50 text-sm mt-4 truncate px-2"
     >
-      {{ value }}
+      {{ displayCaption }}
     </p>
   </div>
 </template>

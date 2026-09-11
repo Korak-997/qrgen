@@ -82,16 +82,19 @@ onUnmounted(() => {
     <div
       class="modal-box glass-panel border border-white/10 w-full"
       :class="sizeClasses[size]"
+      role="dialog"
+      aria-modal="true"
+      :aria-labelledby="title ? 'modal-title' : undefined"
     >
       <!-- Header -->
       <div v-if="title || closable" class="flex items-center justify-between mb-4">
-        <h3 v-if="title" class="text-lg font-bold text-white">
+        <h3 v-if="title" id="modal-title" class="text-lg font-bold text-white">
           {{ title }}
         </h3>
         <div v-else />
         <button
           v-if="closable"
-          class="btn btn-ghost btn-sm btn-circle text-white/60 hover:text-white"
+          class="btn btn-ghost btn-sm btn-circle min-h-11 min-w-11 text-white/60 hover:text-white"
           @click="close"
         >
           <X class="w-5 h-5" />

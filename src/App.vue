@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
+import { Target, Zap, Gem } from 'lucide-vue-next'
 import { AppNavbar, QRDisplay, QRGeneratorForm, QRCustomizer, FAQSection } from '@/components'
 import { useQRContent, useDownload } from '@/composables'
 import { DEFAULT_QR_STYLING, type QRStyling } from '@/types/qr'
 
 // Composables
-const { contentType, inputValue, qrValue, qrMode, isValid, isEmpty, errorMessage, setContentType } = useQRContent()
+const { contentType, fields, qrValue, qrMode, previewLabel, isValid, isEmpty, errorMessage, fieldErrors, setContentType } = useQRContent()
 const { isDownloading, downloadCanvas } = useDownload()
 
 // Styling state
@@ -19,9 +20,19 @@ const styling = reactive<QRStyling>({
 // Template ref for QR display
 const qrDisplayRef = ref<InstanceType<typeof QRDisplay> | null>(null)
 
+const downloadSucceeded = ref(false)
+let downloadSuccessTimeout: ReturnType<typeof setTimeout> | undefined
+
 async function handleDownload() {
   const canvas = qrDisplayRef.value?.getCanvas() ?? null
-  await downloadCanvas(canvas, 'qrcode')
+  const succeeded = await downloadCanvas(canvas, 'qrcode')
+  if (succeeded) {
+    downloadSucceeded.value = true
+    clearTimeout(downloadSuccessTimeout)
+    downloadSuccessTimeout = setTimeout(() => {
+      downloadSucceeded.value = false
+    }, 3000)
+  }
 }
 
 function handleStylingUpdate(newStyling: QRStyling) {
@@ -48,7 +59,7 @@ function handleStylingUpdate(newStyling: QRStyling) {
     </AppNavbar>
 
     <!-- Main Content -->
-    <main id="main-content" class="flex-1 max-w-6xl mx-auto px-4 py-8 sm:py-12 w-full">
+    <main id="main-content" class="flex-1 max-w-6xl mx-auto px-4 py-8 sm:py-12 pb-24 lg:pb-12 w-full">
       <!-- Hero Text -->
       <header class="text-center mb-10 sm:mb-14 animate-fade-in">
         <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-white via-white/90 to-primary bg-clip-text text-transparent">
@@ -70,12 +81,14 @@ function handleStylingUpdate(newStyling: QRStyling) {
               Enter Content
             </h2>
             <QRGeneratorForm
-              v-model="inputValue"
+              :fields="fields"
               :content-type="contentType"
               :is-valid="isValid"
               :error-message="errorMessage"
+              :field-errors="fieldErrors"
               :is-downloading="isDownloading"
               :can-download="isValid && !isEmpty"
+              :download-succeeded="downloadSucceeded"
               @update:content-type="setContentType"
               @download="handleDownload"
             />
@@ -103,6 +116,7 @@ function handleStylingUpdate(newStyling: QRStyling) {
             <QRDisplay
               ref="qrDisplayRef"
               :value="qrValue"
+              :caption="previewLabel"
               :qr-mode="qrMode"
               :size="300"
               :styling="styling"
@@ -149,17 +163,17 @@ function handleStylingUpdate(newStyling: QRStyling) {
       <!-- Features Section -->
       <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12 sm:mt-16" aria-label="Features">
         <article class="glass-panel rounded-2xl p-5 text-center hover:bg-white/10 transition-colors duration-300">
-          <div class="text-2xl mb-2">🎯</div>
+          <Target class="w-6 h-6 mx-auto mb-2 text-primary" aria-hidden="true" />
           <h3 class="font-semibold text-white mb-1">High Quality</h3>
           <p class="text-white/50 text-sm">Level H error correction for reliable scanning</p>
         </article>
         <article class="glass-panel rounded-2xl p-5 text-center hover:bg-white/10 transition-colors duration-300">
-          <div class="text-2xl mb-2">⚡</div>
+          <Zap class="w-6 h-6 mx-auto mb-2 text-primary" aria-hidden="true" />
           <h3 class="font-semibold text-white mb-1">Instant</h3>
           <p class="text-white/50 text-sm">Real-time generation as you type</p>
         </article>
         <article class="glass-panel rounded-2xl p-5 text-center hover:bg-white/10 transition-colors duration-300">
-          <div class="text-2xl mb-2">💎</div>
+          <Gem class="w-6 h-6 mx-auto mb-2 text-primary" aria-hidden="true" />
           <h3 class="font-semibold text-white mb-1">Free Forever</h3>
           <p class="text-white/50 text-sm">No hidden fees or premium tiers</p>
         </article>

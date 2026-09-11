@@ -1,12 +1,34 @@
-/**
- * QR Code Customization Types
- * Centralized type definitions for QR styling options
- */
-
 export type LogoType = 'none' | 'icon' | 'image' | 'emoji' | 'social'
 export type DotStyle = 'square' | 'rounded' | 'dots' | 'classy' | 'classy-rounded'
 export type CornerStyle = 'square' | 'dot' | 'extra-rounded'
-export type QRContentType = 'text' | 'url' | 'number' | 'base64'
+export type QRContentType = 'text' | 'url' | 'number' | 'base64' | 'wifi' | 'phone' | 'vcard'
+export type WifiSecurity = 'WPA' | 'WEP' | 'nopass'
+
+export interface SimpleFields {
+  value: string
+}
+
+export interface WifiFields {
+  ssid: string
+  password: string
+  security: WifiSecurity
+  hidden: boolean
+}
+
+export interface PhoneFields {
+  phone: string
+}
+
+export interface VCardFields {
+  name: string
+  phone: string
+  email: string
+  org: string
+}
+
+export const DEFAULT_WIFI_FIELDS: WifiFields = { ssid: '', password: '', security: 'WPA', hidden: false }
+export const DEFAULT_PHONE_FIELDS: PhoneFields = { phone: '' }
+export const DEFAULT_VCARD_FIELDS: VCardFields = { name: '', phone: '', email: '', org: '' }
 
 export interface QRLogo {
   type: LogoType
@@ -91,6 +113,8 @@ export const QR_CONTENT_TYPES = [
   { id: 'text', label: 'Text', placeholder: 'Enter any text' },
   { id: 'url', label: 'URL', placeholder: 'https://example.com' },
   { id: 'number', label: 'Number', placeholder: '0123456789' },
-  { id: 'base64', label: 'Base64', placeholder: 'SGVsbG8gd29ybGQ=' }
+  { id: 'base64', label: 'Base64', placeholder: 'SGVsbG8gd29ybGQ=' },
+  { id: 'wifi', label: 'WiFi', placeholder: '' },
+  { id: 'phone', label: 'Phone', placeholder: '+1 555 123 4567' },
+  { id: 'vcard', label: 'Contact', placeholder: '' }
 ] as const satisfies ReadonlyArray<{ id: QRContentType; label: string; placeholder: string }>
-

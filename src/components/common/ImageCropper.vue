@@ -163,7 +163,7 @@ onUnmounted(() => {
     <!-- Controls -->
     <div class="flex items-center justify-center gap-2 mt-4">
       <button
-        class="btn btn-ghost btn-sm btn-circle"
+        class="btn btn-ghost btn-sm btn-circle min-h-11 min-w-11"
         title="Zoom out"
         @click="adjustZoom(-0.2)"
       >
@@ -171,7 +171,7 @@ onUnmounted(() => {
       </button>
 
       <button
-        class="btn btn-ghost btn-sm btn-circle"
+        class="btn btn-ghost btn-sm btn-circle min-h-11 min-w-11"
         title="Zoom in"
         @click="adjustZoom(0.2)"
       >
@@ -179,7 +179,7 @@ onUnmounted(() => {
       </button>
 
       <button
-        class="btn btn-ghost btn-sm btn-circle"
+        class="btn btn-ghost btn-sm btn-circle min-h-11 min-w-11"
         title="Rotate"
         @click="rotate"
       >

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import {
   Image as ImageIcon,
   Smile,
@@ -23,7 +23,8 @@ import {
   Clock,
   Check,
   Award,
-  Bookmark
+  Bookmark,
+  X
 } from 'lucide-vue-next'
 import { ImageCropper } from '@/components'
 import IconGrid, { type IconItem } from '@/components/common/IconGrid.vue'
@@ -48,6 +49,16 @@ const emit = defineEmits<{
 // Tabs
 type TabId = 'icons' | 'upload' | 'emoji' | 'social'
 const activeTab = ref<TabId>('icons')
+
+const selectedLabel = computed(() => {
+  switch (props.selectedType) {
+    case 'icon': return 'Icon'
+    case 'image': return 'Uploaded image'
+    case 'emoji': return 'Emoji'
+    case 'social': return 'Social icon'
+    default: return null
+  }
+})
 
 const tabs: { id: TabId; label: string; icon: any }[] = [
   { id: 'icons', label: 'Icons', icon: Sparkles },
@@ -231,12 +242,37 @@ function renderLucideToSvg(iconId: string): string {
 
     <!-- Main selector view -->
     <template v-else>
+      <!-- Persistent selected-logo indicator, stays visible across tab switches -->
+      <div
+        v-if="selectedType !== 'none'"
+        class="flex items-center justify-between gap-3 p-3 mb-4 rounded-xl bg-primary/10 border border-primary/20"
+      >
+        <div class="flex items-center gap-2 min-w-0">
+          <img
+            v-if="selectedSource && selectedType !== 'emoji'"
+            :src="selectedSource"
+            alt=""
+            class="w-8 h-8 rounded-lg object-contain bg-white shrink-0"
+          />
+          <span v-else-if="selectedType === 'emoji'" class="text-xl leading-none shrink-0">{{ selectedSource }}</span>
+          <span class="text-sm text-white/80 truncate">Selected: <span class="font-medium text-white">{{ selectedLabel }}</span></span>
+        </div>
+        <button
+          type="button"
+          class="btn btn-ghost btn-sm btn-circle min-h-11 min-w-11 text-white/60 hover:text-error"
+          title="Remove logo"
+          @click="emit('clear')"
+        >
+          <X class="w-4 h-4" />
+        </button>
+      </div>
+
       <!-- Tabs -->
       <div class="flex gap-1 p-1 bg-white/5 rounded-xl mb-4">
         <button
           v-for="tab in tabs"
           :key="tab.id"
-          class="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all"
+          class="flex-1 flex items-center justify-center gap-2 px-3 py-2 min-h-11 rounded-lg text-sm font-medium transition-all"
           :class="activeTab === tab.id
             ? 'bg-primary text-white shadow-lg'
             : 'text-white/60 hover:text-white hover:bg-white/10'"
